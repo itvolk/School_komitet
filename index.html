@@ -1,0 +1,1368 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Казначей класса — Родителям</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: -apple-system, 'Segoe UI', Roboto, sans-serif; background: #f0f2f5; padding: 12px; min-height: 100vh; }
+        .container { max-width: 1200px; margin: 0 auto; background: #fff; border-radius: 16px; padding: 16px; box-shadow: 0 2px 10px rgba(0,0,0,0.08); }
+        .card { background: #f8f9fc; border-radius: 12px; padding: 16px; margin-bottom: 16px; }
+        .balance { font-size: 28px; font-weight: 700; }
+        .positive { color: #27ae60; }
+        .negative { color: #e74c3c; }
+        .flex-row { display: flex; flex-wrap: wrap; gap: 12px; align-items: flex-end; }
+        .form-group { flex: 1 1 160px; margin-bottom: 6px; min-width: 120px; }
+        label { display: block; font-weight: 600; font-size: 13px; margin-bottom: 3px; }
+        input, select { width: 100%; padding: 8px 10px; border: 1px solid #d0d7de; border-radius: 8px; font-size: 14px; background: #fff; -webkit-appearance: none; appearance: none; }
+        select { background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e"); background-repeat: no-repeat; background-position: right 8px center; background-size: 16px; padding-right: 32px; }
+        .btn { background: #4f8cf7; color: #fff; border: none; padding: 10px 18px; border-radius: 8px; font-weight: 600; cursor: pointer; transition: 0.2s; font-size: 14px; min-height: 44px; touch-action: manipulation; white-space: nowrap; }
+        .btn:active { transform: scale(0.97); }
+        .btn:hover { background: #3a6fd4; }
+        .btn-success { background: #2ecc71; }
+        .btn-success:hover { background: #27ae60; }
+        .btn-danger { background: #e74c3c; }
+        .btn-danger:hover { background: #c0392b; }
+        .btn-outline { background: transparent; border: 1px solid #4f8cf7; color: #4f8cf7; }
+        .btn-outline:hover { background: #4f8cf7; color: #fff; }
+        .btn-sm { padding: 6px 12px; font-size: 12px; min-height: 32px; }
+        .btn-filter { background: #6c757d; color: #fff; }
+        .btn-filter:hover { background: #5a6268; }
+        .hidden { display: none; }
+        .tabs { display: flex; gap: 6px; margin-bottom: 16px; flex-wrap: wrap; padding-bottom: 4px; }
+        .tab-btn { padding: 8px 14px; border: none; background: #e9ecf0; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 13px; white-space: nowrap; touch-action: manipulation; min-height: 40px; flex: 0 0 auto; }
+        .tab-btn.active { background: #4f8cf7; color: #fff; }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+        .table-wrapper { overflow-x: auto; -webkit-overflow-scrolling: touch; margin: 0 -4px; padding: 0 4px; }
+        table { width: 100%; border-collapse: collapse; font-size: 13px; min-width: 500px; }
+        th, td { padding: 8px 6px; border-bottom: 1px solid #e9ecf0; text-align: left; word-break: break-word; }
+        th { background: #f1f4f9; font-weight: 600; white-space: nowrap; }
+        .badge { display: inline-block; padding: 2px 10px; border-radius: 20px; font-size: 11px; font-weight: 600; white-space: nowrap; }
+        .badge.income { background: #d4edda; color: #155724; }
+        .badge.expense { background: #f8d7da; color: #721c24; }
+        .badge.debt { background: #fff3cd; color: #856404; }
+        .badge.fund { background: #d1ecf1; color: #0c5460; }
+        .badge.period { background: #e8daef; color: #6c3483; }
+        .fund-tag { display: inline-block; background: #d1ecf1; color: #0c5460; padding: 2px 8px; border-radius: 12px; font-size: 11px; font-weight: 600; margin: 2px 2px 2px 0; }
+        .header-actions { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+        .selected-children { display: flex; flex-wrap: wrap; gap: 4px; align-items: center; }
+        .selected-children .child-tag { background: #e9ecf0; padding: 2px 10px; border-radius: 12px; font-size: 13px; display: inline-block; }
+        .debt-summary { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; margin-bottom: 12px; }
+        .debt-summary .debt-item { background: #fff; padding: 12px; border-radius: 8px; border: 1px solid #e9ecf0; text-align: center; }
+        .debt-summary .debt-item .amount { font-size: 20px; font-weight: 700; }
+        .debt-summary .debt-item .label { font-size: 12px; color: #888; }
+        .period-selector { display: flex; gap: 6px; flex-wrap: wrap; align-items: center; }
+        .period-selector .btn { padding: 6px 12px; font-size: 12px; min-height: 36px; }
+        .filter-section { background: #f8f9fc; padding: 12px; border-radius: 8px; margin-bottom: 12px; }
+        .filter-section .flex-row { gap: 8px; }
+        .filter-section .form-group { flex: 1 1 130px; min-width: 100px; margin-bottom: 4px; }
+        .filter-section .form-group label { font-size: 11px; }
+        .filter-section .btn { padding: 6px 12px; font-size: 12px; min-height: 36px; }
+        .empty-state { text-align: center; padding: 40px 20px; color: #999; }
+        .empty-state .icon { font-size: 48px; margin-bottom: 12px; }
+        .modal-overlay { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); align-items: center; justify-content: center; }
+        .modal-content { background: #fff; margin: 16px; padding: 24px; border-radius: 16px; max-width: 500px; width: 100%; max-height: 90vh; overflow-y: auto; }
+        .modal-close { float: right; font-size: 24px; cursor: pointer; color: #888; touch-action: manipulation; padding: 0 8px; }
+        .modal-close:hover { color: #000; }
+        .child-selector { display: flex; gap: 16px; margin: 12px 0; flex-wrap: wrap; }
+        .child-selector .list-container { flex: 1; min-width: 150px; }
+        .child-selector .list-container h4 { font-size: 14px; color: #555; margin-bottom: 8px; text-align: center; }
+        .child-selector .list-container .list-box { border: 1px solid #d0d7de; border-radius: 8px; min-height: 150px; max-height: 250px; overflow-y: auto; background: #fff; padding: 4px; }
+        .child-selector .list-container .list-item { padding: 8px 12px; cursor: pointer; border-radius: 6px; transition: 0.2s; font-size: 14px; user-select: none; touch-action: manipulation; }
+        .child-selector .list-container .list-item:hover { background: #e9ecf0; }
+        .child-selector .list-container .list-item:active { background: #d1d7e0; }
+        .child-selector .list-container .list-item.selected { background: #e3ecfa; color: #1a3a6a; }
+        .child-selector .list-container .list-item .move-hint { font-size: 11px; color: #888; margin-left: 8px; }
+        .child-selector .empty-hint { color: #999; text-align: center; padding: 20px 0; font-size: 13px; }
+        @media (max-width: 768px) { body { padding: 8px; } .container { padding: 12px; border-radius: 12px; } .card { padding: 12px; } h1 { font-size: 22px; } h3 { font-size: 17px; } h4 { font-size: 15px; } .balance { font-size: 24px; } .flex-row { flex-direction: column; align-items: stretch; gap: 8px; } .form-group { flex: 1 1 auto; min-width: unset; margin-bottom: 4px; } .form-group label { font-size: 12px; } input, select { padding: 10px 12px; font-size: 16px; } .btn { padding: 12px 16px; font-size: 15px; min-height: 48px; width: 100%; justify-content: center; } .btn-sm { padding: 8px 12px; font-size: 13px; min-height: 38px; width: auto; } .btn-outline { width: auto; } .tabs { gap: 4px; padding-bottom: 4px; flex-wrap: wrap; } .tab-btn { padding: 8px 12px; font-size: 12px; min-height: 36px; flex: 1 1 auto; text-align: center; } .table-wrapper { margin: 0 -8px; padding: 0 8px; } table { font-size: 12px; min-width: 400px; } th, td { padding: 6px 4px; } .filter-section .flex-row { flex-direction: column; gap: 6px; } .filter-section .form-group { flex: 1 1 auto; } .filter-section .btn { width: 100%; } .period-selector { flex-direction: row; flex-wrap: wrap; } .period-selector .btn { flex: 1 1 auto; min-width: 80px; width: auto; } .header-actions { width: 100%; justify-content: flex-start; } .debt-summary { grid-template-columns: 1fr 1fr; } .modal-content { margin: 12px; padding: 20px; } .child-selector { flex-direction: column; } .child-selector .list-container { min-width: unset; } }
+        @media (max-width: 480px) { body { padding: 4px; } .container { padding: 8px; } .card { padding: 10px; margin-bottom: 10px; } h1 { font-size: 18px; } .balance { font-size: 20px; } table { font-size: 11px; min-width: 320px; } th, td { padding: 4px 3px; } .tab-btn { font-size: 11px; padding: 6px 10px; min-height: 32px; } .btn { font-size: 14px; padding: 10px 14px; min-height: 44px; } .btn-sm { font-size: 11px; padding: 4px 10px; min-height: 30px; } .debt-summary { grid-template-columns: 1fr; } .modal-content { margin: 8px; padding: 16px; } }
+        @media (max-width: 360px) { .tabs { gap: 2px; } .tab-btn { font-size: 10px; padding: 4px 8px; min-height: 28px; } table { font-size: 10px; min-width: 280px; } th, td { padding: 3px 2px; } }
+    </style>
+</head>
+<body>
+
+<div class="container" id="app">
+    <!-- ШАПКА -->
+    <div id="header">
+        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px; margin-bottom:12px;">
+            <h1 style="font-size:20px; margin:0;">📊 Казначей класса — Родителям</h1>
+            <div class="header-actions">
+                <button class="btn btn-success btn-sm" id="importBtn">📤 Загрузить данные</button>
+                <input type="file" id="importFile" accept=".json" style="display:none;">
+                <button class="btn btn-danger btn-sm" id="clearDataBtn">🗑️ Очистить</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ИНФОРМАЦИЯ О ВЫБРАННЫХ ДЕТЯХ -->
+    <div id="selectedInfo" class="hidden">
+        <div class="card" style="padding:12px 16px;">
+            <div class="selected-children">
+                <span style="font-weight:600;">👨‍👩‍👧‍👦 Мои дети:</span>
+                <span id="selectedChildrenTags"><span style="color:#999;">не выбраны</span></span>
+            </div>
+        </div>
+    </div>
+
+    <!-- ГЛАВНАЯ СТРАНИЦА -->
+    <div id="mainContent" class="hidden">
+        <!-- Баланс -->
+        <div class="card" style="background:#eef3fc; padding:12px 16px;">
+            <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap;">
+                <span style="font-size:16px; font-weight:600;">💰 Общий баланс класса</span>
+                <span class="balance" id="balanceDisplay">0 ₽</span>
+            </div>
+        </div>
+
+        <!-- Задолженности -->
+        <div class="card">
+            <h4>📋 Задолженности</h4>
+            <div id="debtSummary" class="debt-summary"></div>
+            <div id="debtTableWrapper" class="table-wrapper">
+                <table>
+                    <thead><tr><th>Ученик</th><th>Фонд</th><th>Обязательно</th><th>Внесено</th><th>Задолженность</th></tr></thead>
+                    <tbody id="debtTableBody"><tr><td colspan="5" style="text-align:center;color:#999;">Нет данных</td></tr></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- ВКЛАДКИ -->
+    <div id="tabsContainer" class="hidden">
+        <div class="tabs">
+            <button class="tab-btn active" data-tab="tabIncomes">💳 Платежи</button>
+            <button class="tab-btn" data-tab="tabExpenses">📉 Расходы</button>
+            <button class="tab-btn" data-tab="tabReport">📈 Отчёт</button>
+            <button class="tab-btn" data-tab="tabClass">👨‍👩‍👧 Класс</button>
+            <button class="tab-btn" data-tab="tabSettings">⚙️ Настройки</button>
+        </div>
+
+        <!-- Вкладка: Платежи -->
+        <div id="tabIncomes" class="tab-content active">
+            <div class="card">
+                <h3>💳 Платежи</h3>
+                <div class="filter-section">
+                    <div class="flex-row">
+                        <div class="form-group">
+                            <label>С</label>
+                            <input type="date" id="incomeFilterFrom">
+                        </div>
+                        <div class="form-group">
+                            <label>По</label>
+                            <input type="date" id="incomeFilterTo">
+                        </div>
+                        <div class="form-group" style="flex:2;">
+                            <label>Ученики</label>
+                            <div style="display:flex; gap:4px; align-items:center; flex-wrap:wrap;">
+                                <button class="btn btn-outline btn-sm" id="incomeFilterChildBtn" style="min-height:32px; padding:4px 12px;">👥 Выбрать</button>
+                                <span id="incomeFilterChildTags" style="font-size:13px; color:#666;">все</span>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>Тип взноса</label>
+                            <select id="incomeFilterFund">
+                                <option value="all">Все</option>
+                            </select>
+                        </div>
+                        <button class="btn btn-filter" id="incomeFilterApply">🔍 Применить</button>
+                        <button class="btn btn-outline" id="incomeFilterClear">✕ Сбросить</button>
+                    </div>
+                </div>
+                <div class="table-wrapper">
+                    <table>
+                        <thead><tr><th>Дата</th><th>Ученик</th><th>Плательщик</th><th>Сумма</th><th>Тип</th><th>Комментарий</th></tr></thead>
+                        <tbody id="incomesTableBody"><tr><td colspan="6" style="text-align:center;color:#999;">Нет данных</td></tr></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Вкладка: Расходы -->
+        <div id="tabExpenses" class="tab-content">
+            <div class="card">
+                <h3>📉 Расходы</h3>
+                <div class="filter-section">
+                    <div class="flex-row">
+                        <div class="form-group">
+                            <label>С</label>
+                            <input type="date" id="expenseFilterFrom">
+                        </div>
+                        <div class="form-group">
+                            <label>По</label>
+                            <input type="date" id="expenseFilterTo">
+                        </div>
+                        <div class="form-group">
+                            <label>Категория</label>
+                            <select id="expenseFilterCategory">
+                                <option value="all">Все</option>
+                            </select>
+                        </div>
+                        <button class="btn btn-filter" id="expenseFilterApply">🔍 Применить</button>
+                        <button class="btn btn-outline" id="expenseFilterClear">✕ Сбросить</button>
+                    </div>
+                </div>
+                <div class="table-wrapper">
+                    <table>
+                        <thead><tr><th>Дата</th><th>Сумма</th><th>Категория</th><th>Описание</th><th>Чек</th></tr></thead>
+                        <tbody id="expensesTableBody"><tr><td colspan="5" style="text-align:center;color:#999;">Нет данных</td></tr></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Вкладка: Отчёт -->
+        <div id="tabReport" class="tab-content">
+            <div class="card">
+                <h3>📈 Отчёт за период</h3>
+                <div style="margin-bottom:12px;">
+                    <label style="font-weight:600; display:block; margin-bottom:6px; font-size:14px;">Быстрый выбор:</label>
+                    <div class="period-selector">
+                        <button class="btn btn-outline btn-sm period-btn" data-period="month">📅 Месяц</button>
+                        <button class="btn btn-outline btn-sm period-btn" data-period="quarter">📅 Квартал</button>
+                        <button class="btn btn-outline btn-sm period-btn" data-period="halfyear">📅 Полугодие</button>
+                        <button class="btn btn-outline btn-sm period-btn" data-period="year">📅 Год</button>
+                        <button class="btn btn-outline btn-sm period-btn" data-period="all">📅 Всё</button>
+                    </div>
+                </div>
+                <div class="flex-row" style="border-top:1px solid #e9ecf0; padding-top:12px;">
+                    <div class="form-group">
+                        <label>С</label>
+                        <input type="date" id="reportFrom">
+                    </div>
+                    <div class="form-group">
+                        <label>По</label>
+                        <input type="date" id="reportTo">
+                    </div>
+                    <div class="form-group">
+                        <label>Ученик</label>
+                        <select id="reportFilterChild">
+                            <option value="all">Все</option>
+                        </select>
+                    </div>
+                    <button class="btn" id="reportGenerate">📊 Сформировать</button>
+                    <button class="btn btn-outline" id="reportClear">🗑️ Очистить</button>
+                </div>
+                <div id="reportResult" style="margin-top:12px;"></div>
+            </div>
+        </div>
+
+        <!-- Вкладка: Класс -->
+        <div id="tabClass" class="tab-content">
+            <div class="card">
+                <h3>👨‍👩‍👧‍👦 Класс</h3>
+                <div class="table-wrapper">
+                    <table>
+                        <thead><tr><th>#</th><th>Ученик</th><th>Родители</th></tr></thead>
+                        <tbody id="classTableBody"><tr><td colspan="3" style="text-align:center;color:#999;">Нет данных</td></tr></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Вкладка: Настройки -->
+        <div id="tabSettings" class="tab-content">
+            <div class="card">
+                <h3>⚙️ Настройки</h3>
+                <div style="margin-bottom:16px;">
+                    <h4>Выбор детей</h4>
+                    <p style="font-size:13px; color:#888; margin-bottom:8px;">Нажмите на имя ребенка, чтобы переместить его в другой список:</p>
+                    <div id="settingsChildrenContainer"></div>
+                    <button class="btn btn-success" id="settingsSaveBtn">💾 Сохранить выбор</button>
+                </div>
+                <div style="border-top:1px solid #e9ecf0; padding-top:12px;">
+                    <h4>Информация о данных</h4>
+                    <div style="font-size:13px; color:#666; line-height:1.8;">
+                        <div><strong>Дата экспорта:</strong> <span id="infoExportDate">—</span></div>
+                        <div><strong>Время экспорта:</strong> <span id="infoExportTime">—</span></div>
+                        <div><strong>Версия:</strong> <span id="infoVersion">—</span></div>
+                        <div><strong>Всего приходов:</strong> <span id="infoTotalIncome">0</span></div>
+                        <div><strong>Всего расходов:</strong> <span id="infoTotalExpense">0</span></div>
+                        <div><strong>Всего детей:</strong> <span id="infoTotalChildren">0</span></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ПУСТОЕ СОСТОЯНИЕ (нет данных) -->
+    <div id="emptyState">
+        <div class="empty-state">
+            <div class="icon">📂</div>
+            <h2>Нет данных</h2>
+            <p style="margin:8px 0 16px;">Загрузите файл с данными, полученный от казначея</p>
+            <button class="btn btn-success" id="emptyImportBtn">📤 Загрузить данные</button>
+        </div>
+    </div>
+</div>
+
+<!-- МОДАЛЬНЫЕ ОКНА -->
+<div id="childSelectModal" class="modal-overlay">
+    <div class="modal-content">
+        <span class="modal-close" id="childModalClose">&times;</span>
+        <h2>👨‍👩‍👧‍👦 Выберите своих детей</h2>
+        <p style="color:#888; margin:8px 0 16px;">Нажмите на имя ребенка, чтобы переместить его в другой список:</p>
+        <div id="modalChildrenContainer"></div>
+        <button class="btn btn-success" id="modalSaveBtn" style="width:100%;">✅ Сохранить и продолжить</button>
+    </div>
+</div>
+
+<div id="filterChildModal" class="modal-overlay">
+    <div class="modal-content">
+        <span class="modal-close" id="filterChildModalClose">&times;</span>
+        <h2>👥 Выберите учеников для фильтра</h2>
+        <p style="color:#888; margin:8px 0 16px;">Нажмите на имя ученика, чтобы добавить или убрать его из фильтра:</p>
+        <div id="filterChildContainer"></div>
+        <button class="btn btn-success" id="filterChildSaveBtn" style="width:100%;">✅ Применить фильтр</button>
+    </div>
+</div>
+
+<script>
+console.log('✅ Страница для родителей загружена');
+
+// === КОНСТАНТЫ ===
+const DATA_KEY = 'parent_data';
+const SELECTED_KEY = 'parent_selected_children';
+
+// === ДАННЫЕ ===
+let parentData = null;
+let selectedChildren = [];
+let filterChildren = [];
+
+// === ЗАГРУЗКА ДАННЫХ ===
+function loadData() {
+    try {
+        const raw = localStorage.getItem(DATA_KEY);
+        if (raw) {
+            parentData = JSON.parse(raw);
+            return true;
+        }
+    } catch(e) {
+        console.error('❌ Ошибка загрузки данных:', e);
+    }
+    return false;
+}
+
+function saveData(data) {
+    try {
+        localStorage.setItem(DATA_KEY, JSON.stringify(data));
+        parentData = data;
+        return true;
+    } catch(e) {
+        console.error('❌ Ошибка сохранения данных:', e);
+        return false;
+    }
+}
+
+function loadSelected() {
+    try {
+        const raw = localStorage.getItem(SELECTED_KEY);
+        if (raw) {
+            selectedChildren = JSON.parse(raw);
+            return true;
+        }
+    } catch(e) {
+        console.error('❌ Ошибка загрузки выбранных детей:', e);
+    }
+    return false;
+}
+
+function saveSelected() {
+    try {
+        localStorage.setItem(SELECTED_KEY, JSON.stringify(selectedChildren));
+        return true;
+    } catch(e) {
+        console.error('❌ Ошибка сохранения выбранных детей:', e);
+        return false;
+    }
+}
+
+// === ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ ===
+function getChildren() {
+    return parentData && parentData.children ? parentData.children : [];
+}
+
+function getTransactions() {
+    return parentData && parentData.transactions ? parentData.transactions : [];
+}
+
+function getFunds() {
+    return parentData && parentData.funds ? parentData.funds : [];
+}
+
+function getChildName(id) {
+    const children = getChildren();
+    const child = children.find(c => c.id === id);
+    return child ? child.name : 'неизвестный';
+}
+
+function getSelectedChildren() {
+    const allChildren = getChildren();
+    return allChildren.filter(c => selectedChildren.includes(c.id));
+}
+
+function formatDate(dateStr) {
+    if (!dateStr) return '—';
+    const parts = dateStr.split('-');
+    return `${parts[2]}.${parts[1]}.${parts[0]}`;
+}
+
+// === ФУНКЦИЯ ДЛЯ ПОКАЗА ФАЙЛОВ ===
+window.showFilePreview = function(transactionId) {
+    try {
+        const transactions = getTransactions();
+        const tr = transactions.find(t => t.id && t.id.toString() === transactionId.toString());
+        if (!tr) {
+            alert('Транзакция не найдена');
+            return;
+        }
+        if (!tr.files || tr.files.length === 0) {
+            alert('Нет прикреплённых файлов');
+            return;
+        }
+        const firstFile = tr.files[0];
+        if (!firstFile.data) {
+            alert('Файл повреждён или не содержит данных');
+            return;
+        }
+        const win = window.open('', '_blank');
+        if (win) {
+            win.document.write(`
+                <html>
+                    <head>
+                        <title>Чек - ${firstFile.name || 'просмотр'}</title>
+                        <style>
+                            body {
+                                display: flex;
+                                justify-content: center;
+                                align-items: center;
+                                min-height: 100vh;
+                                margin: 0;
+                                background: #f0f2f5;
+                                font-family: sans-serif;
+                            }
+                            .container {
+                                max-width: 95%;
+                                max-height: 95vh;
+                                text-align: center;
+                            }
+                            img {
+                                max-width: 100%;
+                                max-height: 85vh;
+                                border-radius: 8px;
+                                box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+                            }
+                            .info {
+                                margin-top: 12px;
+                                color: #666;
+                                font-size: 14px;
+                            }
+                        </style>
+                    </head>
+                    <body>
+                        <div class="container">
+                            <img src="${firstFile.data}" alt="Чек">
+                            <div class="info">
+                                📄 ${firstFile.name || 'Чек'} 
+                                ${tr.files.length > 1 ? `(+ ещё ${tr.files.length - 1} файлов)` : ''}
+                            </div>
+                        </div>
+                    </body>
+                </html>
+            `);
+            win.document.close();
+        } else {
+            alert('Пожалуйста, разрешите всплывающие окна для этого сайта');
+        }
+    } catch(e) {
+        console.error('❌ Ошибка показа файла:', e);
+        alert('Ошибка при открытии файла: ' + e.message);
+    }
+};
+
+// === РАСЧЁТ ЗАДОЛЖЕННОСТЕЙ ===
+function calculateDebts(selectedChildIds) {
+    const children = getChildren();
+    const transactions = getTransactions();
+    const funds = getFunds();
+    const results = [];
+    
+    if (children.length === 0 || funds.length === 0) return results;
+    
+    const targetChildren = selectedChildIds && selectedChildIds.length > 0 
+        ? children.filter(c => selectedChildIds.includes(c.id))
+        : children;
+    
+    if (targetChildren.length === 0) return results;
+    
+    const allFees = parentData.fees || [];
+    if (allFees.length === 0) return results;
+    
+    allFees.forEach(fee => {
+        const month = fee.month;
+        const fund = fee.fund;
+        const feeAmount = fee.amount;
+        
+        targetChildren.forEach(child => {
+            const paid = transactions
+                .filter(t => t.type === 'income' && 
+                    t.childName === child.name && 
+                    t.date && t.date.startsWith(month) && 
+                    t.fund === fund)
+                .reduce((sum, t) => sum + t.amount, 0);
+            
+            results.push({
+                childName: child.name,
+                childId: child.id,
+                fund: fund,
+                month: month,
+                fee: feeAmount,
+                paid: paid,
+                debt: feeAmount - paid
+            });
+        });
+    });
+    
+    return results;
+}
+
+// === РЕНДЕРИНГ ===
+function renderMain() {
+    const hasData = parentData && parentData.children && parentData.children.length > 0;
+    
+    if (!hasData) {
+        document.getElementById('emptyState').classList.remove('hidden');
+        document.getElementById('selectedInfo').classList.add('hidden');
+        document.getElementById('mainContent').classList.add('hidden');
+        document.getElementById('tabsContainer').classList.add('hidden');
+        return;
+    }
+    
+    document.getElementById('emptyState').classList.add('hidden');
+    document.getElementById('selectedInfo').classList.remove('hidden');
+    document.getElementById('mainContent').classList.remove('hidden');
+    document.getElementById('tabsContainer').classList.remove('hidden');
+    
+    renderSelectedChildren();
+    renderBalance();
+    renderDebts();
+    renderIncomesTable();
+    renderExpensesTable();
+    renderClassTable();
+    renderSettingsChildren();
+    renderInfo();
+    
+    populateChildFilters();
+    populateFundFilters();
+    populateCategoryFilters();
+    
+    // Устанавливаем фильтр по умолчанию — выбранные дети родителя
+    const selected = getSelectedChildren();
+    if (selected.length > 0) {
+        filterChildren = selected.map(c => c.id);
+    } else {
+        filterChildren = [];
+    }
+    updateFilterChildTags();
+}
+
+// === ВЫБРАННЫЕ ДЕТИ ===
+function renderSelectedChildren() {
+    const container = document.getElementById('selectedChildrenTags');
+    const selected = getSelectedChildren();
+    
+    if (selected.length === 0) {
+        container.innerHTML = '<span style="color:#999;">не выбраны</span>';
+        return;
+    }
+    
+    container.innerHTML = selected.map(c => 
+        `<span class="child-tag">${c.name}</span>`
+    ).join(' ');
+}
+
+// === БАЛАНС ===
+function renderBalance() {
+    const transactions = getTransactions();
+    let balance = 0;
+    transactions.forEach(t => {
+        if (t.type === 'income') balance += t.amount;
+        else balance -= t.amount;
+    });
+    
+    const el = document.getElementById('balanceDisplay');
+    el.textContent = balance.toFixed(2) + ' ₽';
+    el.className = 'balance ' + (balance >= 0 ? 'positive' : 'negative');
+}
+
+// === ЗАДОЛЖЕННОСТИ ===
+function renderDebts() {
+    const selected = getSelectedChildren();
+    const childIds = selected.map(c => c.id);
+    const debts = calculateDebts(childIds);
+    
+    const summaryContainer = document.getElementById('debtSummary');
+    const tableBody = document.getElementById('debtTableBody');
+    
+    if (debts.length === 0) {
+        const hasFees = parentData.fees && parentData.fees.length > 0;
+        if (hasFees) {
+            summaryContainer.innerHTML = '<p style="color:#999;">Нет задолженностей</p>';
+        } else {
+            summaryContainer.innerHTML = '<p style="color:#999;">Взносы не установлены</p>';
+        }
+        tableBody.innerHTML = '<tr><td colspan="5" style="text-align:center;color:#999;">Нет данных</td></tr>';
+        return;
+    }
+    
+    const totalDebt = debts.reduce((sum, d) => sum + (d.debt > 0 ? d.debt : 0), 0);
+    const totalFee = debts.reduce((sum, d) => sum + d.fee, 0);
+    const totalPaid = debts.reduce((sum, d) => sum + d.paid, 0);
+    
+    summaryContainer.innerHTML = `
+        <div class="debt-item">
+            <div class="amount" style="color:${totalDebt > 0 ? '#e74c3c' : '#27ae60'}">${totalDebt.toFixed(2)} ₽</div>
+            <div class="label">Общая задолженность</div>
+        </div>
+        <div class="debt-item">
+            <div class="amount">${totalFee.toFixed(2)} ₽</div>
+            <div class="label">Обязательно к оплате</div>
+        </div>
+        <div class="debt-item">
+            <div class="amount" style="color:#27ae60;">${totalPaid.toFixed(2)} ₽</div>
+            <div class="label">Уже внесено</div>
+        </div>
+    `;
+    
+    let html = '';
+    debts.forEach(d => {
+        const cls = d.debt > 0 ? 'debt' : '';
+        html += `<tr>
+            <td><strong>${d.childName}</strong></td>
+            <td><span class="fund-tag">${d.fund}</span></td>
+            <td>${d.fee.toFixed(2)} ₽</td>
+            <td>${d.paid.toFixed(2)} ₽</td>
+            <td><span class="badge ${cls}">${d.debt.toFixed(2)} ₽</span></td>
+        </tr>`;
+    });
+    tableBody.innerHTML = html;
+}
+
+// === ПРИХОДЫ ===
+function renderIncomesTable(filterFrom, filterTo, filterChildIds, filterFund) {
+    const tbody = document.getElementById('incomesTableBody');
+    let transactions = getTransactions().filter(t => t.type === 'income');
+    
+    if (filterFrom) transactions = transactions.filter(t => t.date >= filterFrom);
+    if (filterTo) transactions = transactions.filter(t => t.date <= filterTo);
+    if (filterChildIds && filterChildIds.length > 0) {
+        const children = getChildren();
+        const childNames = children
+            .filter(c => filterChildIds.includes(c.id))
+            .map(c => c.name);
+        transactions = transactions.filter(t => childNames.includes(t.childName));
+    }
+    if (filterFund && filterFund !== 'all') {
+        transactions = transactions.filter(t => t.fund === filterFund);
+    }
+    
+    if (transactions.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;color:#999;">Нет платежей</td></tr>';
+        return;
+    }
+    
+    const sorted = [...transactions].sort((a,b) => a.date < b.date ? 1 : -1);
+    let html = '';
+    sorted.forEach(t => {
+        html += `<tr>
+            <td>${formatDate(t.date)}</td>
+            <td><strong>${t.childName || 'не указан'}</strong></td>
+            <td>${t.parentName || 'не указан'}</td>
+            <td>${t.amount.toFixed(2)} ₽</td>
+            <td><span class="fund-tag">${t.fund || 'Общий сбор'}</span></td>
+            <td>${t.comment || ''}</td>
+        </tr>`;
+    });
+    tbody.innerHTML = html;
+}
+
+// === РАСХОДЫ ===
+function renderExpensesTable(filterFrom, filterTo, filterCategory) {
+    const tbody = document.getElementById('expensesTableBody');
+    let transactions = getTransactions().filter(t => t.type === 'expense');
+    
+    if (filterFrom) transactions = transactions.filter(t => t.date >= filterFrom);
+    if (filterTo) transactions = transactions.filter(t => t.date <= filterTo);
+    if (filterCategory && filterCategory !== 'all') {
+        transactions = transactions.filter(t => t.category === filterCategory);
+    }
+    
+    if (transactions.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;color:#999;">Нет расходов</td></tr>';
+        return;
+    }
+    
+    const sorted = [...transactions].sort((a,b) => a.date < b.date ? 1 : -1);
+    let html = '';
+    sorted.forEach(t => {
+        let fileHtml = '—';
+        if (t.files && t.files.length > 0) {
+            const idStr = t.id ? t.id.toString() : '';
+            fileHtml = `<span style="cursor:pointer;color:#4f8cf7;text-decoration:underline;" onclick="showFilePreview('${idStr}')">📎 ${t.files.length}</span>`;
+        }
+        html += `<tr>
+            <td>${formatDate(t.date)}</td>
+            <td>${t.amount.toFixed(2)} ₽</td>
+            <td><span class="badge expense">${t.category || 'без категории'}</span></td>
+            <td>${t.description || ''}</td>
+            <td>${fileHtml}</td>
+        </tr>`;
+    });
+    tbody.innerHTML = html;
+}
+
+// === КЛАСС ===
+function renderClassTable() {
+    const tbody = document.getElementById('classTableBody');
+    const children = getChildren();
+    
+    if (children.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="3" style="text-align:center;color:#999;">Нет данных</td></tr>';
+        return;
+    }
+    
+    let html = '';
+    children.forEach((c, i) => {
+        const parentsList = c.parents && c.parents.length > 0 ? c.parents.join(', ') : 'не указаны';
+        html += `<tr>
+            <td>${i+1}</td>
+            <td><strong>${c.name}</strong></td>
+            <td>${parentsList}</td>
+        </tr>`;
+    });
+    tbody.innerHTML = html;
+}
+
+// === РЕНДЕР ДВУХ СПИСКОВ ДЛЯ ВЫБОРА ДЕТЕЙ ===
+function renderChildSelector(containerId) {
+    const container = document.getElementById(containerId);
+    const allChildren = getChildren();
+    
+    if (allChildren.length === 0) {
+        container.innerHTML = '<p style="color:#999; text-align:center;">Нет данных о детях</p>';
+        return;
+    }
+    
+    const selected = allChildren.filter(c => selectedChildren.includes(c.id));
+    const available = allChildren.filter(c => !selectedChildren.includes(c.id));
+    
+    let html = `
+        <div class="child-selector">
+            <div class="list-container">
+                <h4>📚 Класс</h4>
+                <div class="list-box">
+    `;
+    
+    if (available.length === 0) {
+        html += `<div class="empty-hint">Все дети выбраны</div>`;
+    } else {
+        available.forEach(child => {
+            html += `
+                <div class="list-item" data-id="${child.id}" data-action="select">
+                    ${child.name} <span class="move-hint">→</span>
+                </div>
+            `;
+        });
+    }
+    
+    html += `
+                </div>
+            </div>
+            <div class="list-container">
+                <h4>👨‍👩‍👧‍👦 Мои дети</h4>
+                <div class="list-box">
+    `;
+    
+    if (selected.length === 0) {
+        html += `<div class="empty-hint">Никто не выбран</div>`;
+    } else {
+        selected.forEach(child => {
+            html += `
+                <div class="list-item selected" data-id="${child.id}" data-action="deselect">
+                    ${child.name} <span class="move-hint">←</span>
+                </div>
+            `;
+        });
+    }
+    
+    html += `
+                </div>
+            </div>
+        </div>
+    `;
+    
+    container.innerHTML = html;
+    
+    container.querySelectorAll('.list-item').forEach(item => {
+        item.addEventListener('click', function() {
+            const childId = parseFloat(this.dataset.id);
+            const action = this.dataset.action;
+            
+            if (action === 'select') {
+                if (!selectedChildren.includes(childId)) {
+                    selectedChildren.push(childId);
+                }
+            } else if (action === 'deselect') {
+                selectedChildren = selectedChildren.filter(id => id !== childId);
+            }
+            
+            saveSelected();
+            renderSelectedChildren();
+            renderChildSelector('settingsChildrenContainer');
+            renderChildSelector('modalChildrenContainer');
+        });
+    });
+}
+
+function renderSettingsChildren() {
+    renderChildSelector('settingsChildrenContainer');
+}
+
+function renderModalChildren() {
+    renderChildSelector('modalChildrenContainer');
+}
+
+// === РЕНДЕР СПИСКА УЧЕНИКОВ ДЛЯ ФИЛЬТРА ===
+function renderFilterChildSelector() {
+    const container = document.getElementById('filterChildContainer');
+    const allChildren = getChildren();
+    
+    if (allChildren.length === 0) {
+        container.innerHTML = '<p style="color:#999; text-align:center;">Нет данных о детях</p>';
+        return;
+    }
+    
+    const selectedIds = filterChildren.length > 0 ? filterChildren : [];
+    const selected = allChildren.filter(c => selectedIds.includes(c.id));
+    const available = allChildren.filter(c => !selectedIds.includes(c.id));
+    
+    let html = `
+        <div class="child-selector" id="filterChildSelector">
+            <div class="list-container">
+                <h4>📚 Все ученики</h4>
+                <div class="list-box">
+    `;
+    
+    if (available.length === 0) {
+        html += `<div class="empty-hint">Все ученики выбраны</div>`;
+    } else {
+        available.forEach(child => {
+            html += `
+                <div class="list-item" data-id="${child.id}" data-action="select">
+                    ${child.name} <span class="move-hint">→</span>
+                </div>
+            `;
+        });
+    }
+    
+    html += `
+                </div>
+            </div>
+            <div class="list-container">
+                <h4>👥 Выбранные для фильтра</h4>
+                <div class="list-box">
+    `;
+    
+    if (selected.length === 0) {
+        html += `<div class="empty-hint">Никто не выбран</div>`;
+    } else {
+        selected.forEach(child => {
+            html += `
+                <div class="list-item selected" data-id="${child.id}" data-action="deselect">
+                    ${child.name} <span class="move-hint">←</span>
+                </div>
+            `;
+        });
+    }
+    
+    html += `
+                </div>
+            </div>
+        </div>
+    `;
+    
+    container.innerHTML = html;
+}
+
+// === ОБНОВЛЕНИЕ ТЕГОВ ФИЛЬТРА ===
+function updateFilterChildTags() {
+    const container = document.getElementById('incomeFilterChildTags');
+    const allChildren = getChildren();
+    
+    if (filterChildren.length === 0) {
+        container.textContent = 'все';
+        return;
+    }
+    
+    const names = filterChildren
+        .map(id => allChildren.find(c => c.id === id))
+        .filter(c => c)
+        .map(c => c.name);
+    
+    if (names.length === 0) {
+        container.textContent = 'все';
+    } else if (names.length <= 3) {
+        container.textContent = names.join(', ');
+    } else {
+        container.textContent = names.slice(0, 3).join(', ') + ` (+${names.length - 3})`;
+    }
+}
+
+// === ИНФОРМАЦИЯ О ДАННЫХ ===
+function renderInfo() {
+    if (!parentData) return;
+    
+    document.getElementById('infoExportDate').textContent = parentData.exportDate || '—';
+    document.getElementById('infoExportTime').textContent = parentData.exportTime || '—';
+    document.getElementById('infoVersion').textContent = parentData.version || '1.0';
+    document.getElementById('infoTotalIncome').textContent = parentData.totalIncome || 0;
+    document.getElementById('infoTotalExpense').textContent = parentData.totalExpense || 0;
+    document.getElementById('infoTotalChildren').textContent = (parentData.children || []).length;
+}
+
+// === ПОПУЛЯЦИЯ ФИЛЬТРОВ ===
+function populateChildFilters() {
+    const reportSelect = document.getElementById('reportFilterChild');
+    const children = getChildren();
+    
+    reportSelect.innerHTML = '<option value="all">Все</option>';
+    children.forEach(c => {
+        const opt = document.createElement('option');
+        opt.value = c.name;
+        opt.textContent = c.name;
+        reportSelect.appendChild(opt);
+    });
+}
+
+function populateFundFilters() {
+    const select = document.getElementById('incomeFilterFund');
+    const funds = getFunds();
+    
+    const currentValue = select.value;
+    select.innerHTML = '<option value="all">Все</option>';
+    funds.forEach(f => {
+        const opt = document.createElement('option');
+        opt.value = f;
+        opt.textContent = f;
+        select.appendChild(opt);
+    });
+    select.value = currentValue;
+}
+
+function populateCategoryFilters() {
+    const select = document.getElementById('expenseFilterCategory');
+    const transactions = getTransactions();
+    const categories = new Set();
+    transactions.filter(t => t.type === 'expense').forEach(t => {
+        if (t.category) categories.add(t.category);
+    });
+    
+    const currentValue = select.value;
+    select.innerHTML = '<option value="all">Все</option>';
+    categories.forEach(c => {
+        const opt = document.createElement('option');
+        opt.value = c;
+        opt.textContent = c;
+        select.appendChild(opt);
+    });
+    select.value = currentValue;
+}
+
+// === ОТЧЁТ ===
+function generateReport(from, to, childFilter) {
+    const div = document.getElementById('reportResult');
+    let transactions = getTransactions();
+    
+    if (from) transactions = transactions.filter(t => t.date >= from);
+    if (to) transactions = transactions.filter(t => t.date <= to);
+    if (childFilter && childFilter !== 'all') {
+        transactions = transactions.filter(t => t.type === 'income' ? t.childName === childFilter : true);
+    }
+    
+    if (transactions.length === 0) {
+        div.innerHTML = '<p style="color:#999;">Нет операций за выбранный период</p>';
+        return;
+    }
+    
+    let income = 0, expense = 0;
+    transactions.forEach(t => {
+        if (t.type === 'income') income += t.amount;
+        else expense += t.amount;
+    });
+    const balance = income - expense;
+    
+    let periodLabel = '';
+    if (from && to) {
+        periodLabel = `${formatDate(from)} — ${formatDate(to)}`;
+    } else if (from) {
+        periodLabel = `с ${formatDate(from)}`;
+    } else if (to) {
+        periodLabel = `по ${formatDate(to)}`;
+    } else {
+        periodLabel = 'За всё время';
+    }
+    
+    let html = `
+        <div style="background:#f1f4f9;padding:12px;border-radius:8px;margin-bottom:12px;">
+            <div style="display:flex; flex-wrap:wrap; gap:12px; font-size:13px;">
+                <div><strong>📅 Период:</strong> ${periodLabel}</div>
+                <div><strong>📈 Приходов:</strong> <span style="color:#27ae60;font-weight:700;">${income.toFixed(2)} ₽</span></div>
+                <div><strong>📉 Расходов:</strong> <span style="color:#e74c3c;font-weight:700;">${expense.toFixed(2)} ₽</span></div>
+                <div><strong>💰 Баланс:</strong> <span style="font-weight:700;color:${balance>=0?'#27ae60':'#e74c3c'};">${balance.toFixed(2)} ₽</span></div>
+                <div><strong>📊 Всего:</strong> ${transactions.length}</div>
+            </div>
+        </div>
+        <div class="table-wrapper">
+            <table>
+                <thead><tr><th>Дата</th><th>Тип</th><th>Сумма</th><th>Описание</th></tr></thead>
+                <tbody>`;
+    
+    const sorted = transactions.slice().sort((a,b) => a.date.localeCompare(b.date));
+    sorted.forEach(t => {
+        const typeLabel = t.type === 'income' ? 'Приход' : 'Расход';
+        let desc = '';
+        if (t.type === 'income') {
+            desc = `${t.childName || 'неизвестный'} — от: ${t.parentName || 'не указан'}` + (t.comment ? ' ('+t.comment+')' : '');
+            if (t.fund) desc += ` [${t.fund}]`;
+        } else {
+            desc = (t.description || '') + ' (' + (t.category || 'без категории') + ')';
+        }
+        html += `<tr>
+            <td>${formatDate(t.date)}</td>
+            <td><span class="badge ${t.type === 'income' ? 'income' : 'expense'}">${typeLabel}</span></td>
+            <td>${t.amount.toFixed(2)} ₽</td>
+            <td>${desc}</td>
+        </tr>`;
+    });
+    html += '</tbody></table></div>';
+    div.innerHTML = html;
+}
+
+// === ИМПОРТ ДАННЫХ ===
+function importData(file) {
+    try {
+        const reader = new FileReader();
+        reader.onload = function(ev) {
+            try {
+                const data = JSON.parse(ev.target.result);
+                
+                if (!data.children || !data.transactions) {
+                    alert('❌ Неверный формат файла. Убедитесь, что это файл, экспортированный из казначея.');
+                    return;
+                }
+                
+                saveData(data);
+                
+                if (selectedChildren.length === 0) {
+                    showChildSelectionModal();
+                } else {
+                    const childIds = data.children.map(c => c.id);
+                    const validSelected = selectedChildren.filter(id => childIds.includes(id));
+                    if (validSelected.length === 0) {
+                        selectedChildren = [];
+                        saveSelected();
+                        showChildSelectionModal();
+                    } else {
+                        selectedChildren = validSelected;
+                        saveSelected();
+                    }
+                }
+                
+                renderMain();
+                // Применяем фильтр после рендера
+                setTimeout(() => {
+                    applyIncomeFilters();
+                }, 100);
+                alert('✅ Данные успешно загружены!');
+            } catch(err) {
+                console.error('❌ Ошибка чтения файла:', err);
+                alert('Ошибка чтения файла: ' + err.message);
+            }
+        };
+        reader.readAsText(file);
+    } catch(err) {
+        console.error('❌ Ошибка импорта:', err);
+        alert('Ошибка: ' + err.message);
+    }
+}
+
+// === МОДАЛЬНЫЕ ОКНА ===
+function showChildSelectionModal() {
+    const modal = document.getElementById('childSelectModal');
+    renderModalChildren();
+    modal.style.display = 'flex';
+}
+
+function closeChildSelectionModal() {
+    document.getElementById('childSelectModal').style.display = 'none';
+}
+
+// === ОЧИСТКА ===
+function clearData() {
+    if (confirm('🗑️ Удалить все данные?')) {
+        localStorage.removeItem(DATA_KEY);
+        localStorage.removeItem(SELECTED_KEY);
+        parentData = null;
+        selectedChildren = [];
+        filterChildren = [];
+        renderMain();
+        alert('✅ Данные очищены');
+    }
+}
+
+// === ИНИЦИАЛИЗАЦИЯ ===
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('✅ DOM загружен');
+    
+    const hasData = loadData();
+    if (hasData) {
+        loadSelected();
+    }
+    
+    renderMain();
+    
+    if (parentData && selectedChildren.length === 0) {
+        setTimeout(() => {
+            showChildSelectionModal();
+        }, 500);
+    }
+    
+    // === ОБРАБОТЧИКИ ===
+    document.getElementById('importBtn').addEventListener('click', function() {
+        document.getElementById('importFile').click();
+    });
+    document.getElementById('emptyImportBtn').addEventListener('click', function() {
+        document.getElementById('importFile').click();
+    });
+    
+    document.getElementById('importFile').addEventListener('change', function(e) {
+        if (e.target.files.length > 0) {
+            importData(e.target.files[0]);
+            this.value = '';
+        }
+    });
+    
+    document.getElementById('clearDataBtn').addEventListener('click', clearData);
+    
+    document.getElementById('childModalClose').addEventListener('click', closeChildSelectionModal);
+    window.addEventListener('click', function(e) {
+        const modal = document.getElementById('childSelectModal');
+        if (e.target === modal) {
+            modal.style.display = 'none';
+        }
+    });
+    
+    document.getElementById('modalSaveBtn').addEventListener('click', function() {
+        saveSelected();
+        renderMain();
+        closeChildSelectionModal();
+        alert('✅ Выбор сохранён');
+    });
+    
+    document.getElementById('settingsSaveBtn').addEventListener('click', function() {
+        saveSelected();
+        renderMain();
+        alert('✅ Выбор сохранён');
+    });
+    
+    // === ФИЛЬТР ПО УЧЕНИКАМ ===
+    document.getElementById('incomeFilterChildBtn').addEventListener('click', function() {
+        renderFilterChildSelector();
+        document.getElementById('filterChildModal').style.display = 'flex';
+    });
+    
+    document.getElementById('filterChildModalClose').addEventListener('click', function() {
+        document.getElementById('filterChildModal').style.display = 'none';
+    });
+    
+    window.addEventListener('click', function(e) {
+        const modal = document.getElementById('filterChildModal');
+        if (e.target === modal) {
+            modal.style.display = 'none';
+        }
+    });
+    
+    document.getElementById('filterChildContainer').addEventListener('click', function(e) {
+        const item = e.target.closest('.list-item');
+        if (!item) return;
+        
+        const childId = parseFloat(item.dataset.id);
+        const action = item.dataset.action;
+        
+        if (action === 'select') {
+            if (!filterChildren.includes(childId)) {
+                filterChildren.push(childId);
+            }
+        } else if (action === 'deselect') {
+            filterChildren = filterChildren.filter(id => id !== childId);
+        }
+        
+        renderFilterChildSelector();
+    });
+    
+    document.getElementById('filterChildSaveBtn').addEventListener('click', function() {
+        if (filterChildren.length === 0) {
+            const allChildren = getChildren();
+            filterChildren = allChildren.map(c => c.id);
+        }
+        updateFilterChildTags();
+        document.getElementById('filterChildModal').style.display = 'none';
+        applyIncomeFilters();
+    });
+    
+    document.querySelectorAll('.tab-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const tabId = this.dataset.tab;
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+            this.classList.add('active');
+            document.getElementById(tabId).classList.add('active');
+            
+            if (tabId === 'tabIncomes') {
+                applyIncomeFilters();
+            }
+            if (tabId === 'tabExpenses') {
+                applyExpenseFilters();
+            }
+            if (tabId === 'tabSettings') {
+                renderSettingsChildren();
+            }
+            if (tabId === 'tabClass') {
+                renderClassTable();
+            }
+        });
+    });
+    
+    // === ФИЛЬТРЫ ПЛАТЕЖЕЙ ===
+    document.getElementById('incomeFilterApply').addEventListener('click', applyIncomeFilters);
+    document.getElementById('incomeFilterClear').addEventListener('click', function() {
+        document.getElementById('incomeFilterFrom').value = '';
+        document.getElementById('incomeFilterTo').value = '';
+        filterChildren = [];
+        updateFilterChildTags();
+        document.getElementById('incomeFilterFund').value = 'all';
+        applyIncomeFilters();
+    });
+    
+    function applyIncomeFilters() {
+        const from = document.getElementById('incomeFilterFrom').value;
+        const to = document.getElementById('incomeFilterTo').value;
+        const fund = document.getElementById('incomeFilterFund').value;
+        renderIncomesTable(from, to, filterChildren, fund);
+    }
+    
+    // Применяем фильтр по умолчанию
+    setTimeout(() => {
+        applyIncomeFilters();
+    }, 200);
+    
+    // === ФИЛЬТРЫ РАСХОДОВ ===
+    document.getElementById('expenseFilterApply').addEventListener('click', applyExpenseFilters);
+    document.getElementById('expenseFilterClear').addEventListener('click', function() {
+        document.getElementById('expenseFilterFrom').value = '';
+        document.getElementById('expenseFilterTo').value = '';
+        document.getElementById('expenseFilterCategory').value = 'all';
+        applyExpenseFilters();
+    });
+    
+    function applyExpenseFilters() {
+        const from = document.getElementById('expenseFilterFrom').value;
+        const to = document.getElementById('expenseFilterTo').value;
+        const category = document.getElementById('expenseFilterCategory').value;
+        renderExpensesTable(from, to, category);
+    }
+    
+    // === ОТЧЁТ ===
+    function getPeriodDates(period) {
+        const now = new Date();
+        const year = now.getFullYear();
+        const month = now.getMonth();
+        let from, to;
+        
+        switch(period) {
+            case 'month':
+                from = new Date(year, month, 1);
+                to = new Date(year, month + 1, 0);
+                break;
+            case 'quarter':
+                const quarterMonth = Math.floor(month / 3) * 3;
+                from = new Date(year, quarterMonth, 1);
+                to = new Date(year, quarterMonth + 3, 0);
+                break;
+            case 'halfyear':
+                const halfMonth = month < 6 ? 0 : 6;
+                from = new Date(year, halfMonth, 1);
+                to = new Date(year, halfMonth + 6, 0);
+                break;
+            case 'year':
+                from = new Date(year, 0, 1);
+                to = new Date(year, 11, 31);
+                break;
+            case 'all':
+            default:
+                return null;
+        }
+        
+        return {
+            from: from.toISOString().split('T')[0],
+            to: to.toISOString().split('T')[0]
+        };
+    }
+    
+    document.querySelectorAll('.period-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const period = this.dataset.period;
+            const dates = getPeriodDates(period);
+            
+            if (dates) {
+                document.getElementById('reportFrom').value = dates.from;
+                document.getElementById('reportTo').value = dates.to;
+            } else {
+                document.getElementById('reportFrom').value = '';
+                document.getElementById('reportTo').value = '';
+            }
+            
+            generateReport(
+                document.getElementById('reportFrom').value,
+                document.getElementById('reportTo').value,
+                document.getElementById('reportFilterChild').value
+            );
+        });
+    });
+    
+    document.getElementById('reportGenerate').addEventListener('click', function() {
+        generateReport(
+            document.getElementById('reportFrom').value,
+            document.getElementById('reportTo').value,
+            document.getElementById('reportFilterChild').value
+        );
+    });
+    
+    document.getElementById('reportClear').addEventListener('click', function() {
+        document.getElementById('reportFrom').value = '';
+        document.getElementById('reportTo').value = '';
+        document.getElementById('reportResult').innerHTML = '';
+    });
+    
+    if (parentData) {
+        setTimeout(() => {
+            generateReport('', '', 'all');
+        }, 100);
+    }
+    
+    console.log('✅ Инициализация завершена');
+});
+</script>
+</body>
+</html>
