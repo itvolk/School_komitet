@@ -29,6 +29,8 @@
         .btn-sm { padding: 6px 12px; font-size: 12px; min-height: 32px; }
         .btn-filter { background: #6c757d; color: #fff; }
         .btn-filter:hover { background: #5a6268; }
+        .btn-contact { background: #9b59b6; color: #fff; }
+        .btn-contact:hover { background: #8e44ad; }
         .hidden { display: none; }
         .tabs { display: flex; gap: 6px; margin-bottom: 16px; flex-wrap: wrap; padding-bottom: 4px; }
         .tab-btn { padding: 8px 14px; border: none; background: #e9ecf0; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 13px; white-space: nowrap; touch-action: manipulation; min-height: 40px; flex: 0 0 auto; }
@@ -76,6 +78,10 @@
         .child-selector .list-container .list-item.selected { background: #e3ecfa; color: #1a3a6a; }
         .child-selector .list-container .list-item .move-hint { font-size: 11px; color: #888; margin-left: 8px; }
         .child-selector .empty-hint { color: #999; text-align: center; padding: 20px 0; font-size: 13px; }
+        .contact-info { text-align: center; padding: 8px 0; }
+        .contact-info .name { font-size: 18px; font-weight: 700; color: #2c3e50; }
+        .contact-info .phone { font-size: 16px; color: #2980b9; margin: 4px 0; }
+        .contact-info .email { font-size: 14px; color: #7f8c8d; }
         @media (max-width: 768px) { body { padding: 8px; } .container { padding: 12px; border-radius: 12px; } .card { padding: 12px; } h1 { font-size: 22px; } h3 { font-size: 17px; } h4 { font-size: 15px; } .balance { font-size: 24px; } .flex-row { flex-direction: column; align-items: stretch; gap: 8px; } .form-group { flex: 1 1 auto; min-width: unset; margin-bottom: 4px; } .form-group label { font-size: 12px; } input, select { padding: 10px 12px; font-size: 16px; } .btn { padding: 12px 16px; font-size: 15px; min-height: 48px; width: 100%; justify-content: center; } .btn-sm { padding: 8px 12px; font-size: 13px; min-height: 38px; width: auto; } .btn-outline { width: auto; } .tabs { gap: 4px; padding-bottom: 4px; flex-wrap: wrap; } .tab-btn { padding: 8px 12px; font-size: 12px; min-height: 36px; flex: 1 1 auto; text-align: center; } .table-wrapper { margin: 0 -8px; padding: 0 8px; } table { font-size: 12px; min-width: 400px; } th, td { padding: 6px 4px; } .filter-section .flex-row { flex-direction: column; gap: 6px; } .filter-section .form-group { flex: 1 1 auto; } .filter-section .btn { width: 100%; } .period-selector { flex-direction: row; flex-wrap: wrap; } .period-selector .btn { flex: 1 1 auto; min-width: 80px; width: auto; } .header-actions { width: 100%; justify-content: flex-start; } .debt-summary { grid-template-columns: 1fr 1fr; } .modal-content { margin: 12px; padding: 20px; } .child-selector { flex-direction: column; } .child-selector .list-container { min-width: unset; } }
         @media (max-width: 480px) { body { padding: 4px; } .container { padding: 8px; } .card { padding: 10px; margin-bottom: 10px; } h1 { font-size: 18px; } .balance { font-size: 20px; } table { font-size: 11px; min-width: 320px; } th, td { padding: 4px 3px; } .tab-btn { font-size: 11px; padding: 6px 10px; min-height: 32px; } .btn { font-size: 14px; padding: 10px 14px; min-height: 44px; } .btn-sm { font-size: 11px; padding: 4px 10px; min-height: 30px; } .debt-summary { grid-template-columns: 1fr; } .modal-content { margin: 8px; padding: 16px; } }
         @media (max-width: 360px) { .tabs { gap: 2px; } .tab-btn { font-size: 10px; padding: 4px 8px; min-height: 28px; } table { font-size: 10px; min-width: 280px; } th, td { padding: 3px 2px; } }
@@ -89,6 +95,7 @@
         <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px; margin-bottom:12px;">
             <h1 style="font-size:20px; margin:0;">📊 Казначей класса — Родителям</h1>
             <div class="header-actions">
+                <button class="btn btn-contact btn-sm" id="contactBtn">💬 Связь с автором</button>
                 <button class="btn btn-success btn-sm" id="importBtn">📤 Загрузить данные</button>
                 <input type="file" id="importFile" accept=".json" style="display:none;">
                 <button class="btn btn-danger btn-sm" id="clearDataBtn">🗑️ Очистить</button>
@@ -315,6 +322,23 @@
         <p style="color:#888; margin:8px 0 16px;">Нажмите на имя ученика, чтобы добавить или убрать его из фильтра:</p>
         <div id="filterChildContainer"></div>
         <button class="btn btn-success" id="filterChildSaveBtn" style="width:100%;">✅ Применить фильтр</button>
+    </div>
+</div>
+
+<!-- Модалка "Связь с автором" -->
+<div id="contactModal" class="modal-overlay">
+    <div class="modal-content">
+        <span class="modal-close" id="contactModalClose">&times;</span>
+        <h2 style="text-align:center;">💬 Связь с автором</h2>
+        <div class="contact-info">
+            <div class="name">Волков Дмитрий Владимирович</div>
+            <div class="phone">📞 <a href="tel:+79780964206" style="color:#2980b9; text-decoration:none;">+7-978-096-42-06</a></div>
+            <div class="email">✉️ <a href="mailto:volkov_154@list.ru" style="color:#2980b9; text-decoration:none;">volkov_154@list.ru</a></div>
+            <div style="margin-top:12px; font-size:13px; color:#7f8c8d;">
+                По всем вопросам работы приложения<br>
+                вы можете связаться с автором.
+            </div>
+        </div>
     </div>
 </div>
 
@@ -557,7 +581,6 @@ function renderMain() {
     populateFundFilters();
     populateCategoryFilters();
     
-    // Устанавливаем фильтр по умолчанию — выбранные дети родителя
     const selected = getSelectedChildren();
     if (selected.length > 0) {
         filterChildren = selected.map(c => c.id);
@@ -744,7 +767,7 @@ function renderClassTable() {
     tbody.innerHTML = html;
 }
 
-// === РЕНДЕР ДВУХ СПИСКОВ ДЛЯ ВЫБОРА ДЕТЕЙ ===
+// === РЕНДЕР ДВУХ СПИСКОВ ===
 function renderChildSelector(containerId) {
     const container = document.getElementById(containerId);
     const allChildren = getChildren();
@@ -1049,7 +1072,7 @@ function generateReport(from, to, childFilter) {
     div.innerHTML = html;
 }
 
-// === ИМПОРТ ДАННЫХ ===
+// === ИМПОРТ ===
 function importData(file) {
     try {
         const reader = new FileReader();
@@ -1080,7 +1103,6 @@ function importData(file) {
                 }
                 
                 renderMain();
-                // Применяем фильтр после рендера
                 setTimeout(() => {
                     applyIncomeFilters();
                 }, 100);
@@ -1107,6 +1129,20 @@ function showChildSelectionModal() {
 function closeChildSelectionModal() {
     document.getElementById('childSelectModal').style.display = 'none';
 }
+
+// === СВЯЗЬ С АВТОРОМ ===
+const contactModal = document.getElementById('contactModal');
+document.getElementById('contactBtn').addEventListener('click', function() {
+    contactModal.style.display = 'flex';
+});
+document.getElementById('contactModalClose').addEventListener('click', function() {
+    contactModal.style.display = 'none';
+});
+window.addEventListener('click', function(e) {
+    if (e.target === contactModal) {
+        contactModal.style.display = 'none';
+    }
+});
 
 // === ОЧИСТКА ===
 function clearData() {
@@ -1262,7 +1298,6 @@ document.addEventListener('DOMContentLoaded', function() {
         renderIncomesTable(from, to, filterChildren, fund);
     }
     
-    // Применяем фильтр по умолчанию
     setTimeout(() => {
         applyIncomeFilters();
     }, 200);
