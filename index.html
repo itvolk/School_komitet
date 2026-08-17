@@ -961,21 +961,38 @@ async function updateData() {
                 </div>
             `;
             
-            document.getElementById('updateConfirmBtn').addEventListener('click', function() {
-                saveData(siteData);
-                parentData = siteData;
-                status.textContent = '✅ Данные обновлены!';
-                result.innerHTML = `
-                    <div style="background:#d4edda; padding:16px; border-radius:8px; border:1px solid #c3e6cb;">
-                        <p style="color:#155724; font-weight:600;">✅ Данные успешно обновлены!</p>
-                        <p style="color:#155724; font-size:13px; margin-top:8px;">Можете закрыть это окно и пользоваться актуальными данными.</p>
-                    </div>
-                `;
-                renderMain();
-                setTimeout(() => {
-                    modal.style.display = 'none';
-                }, 2000);
-            });
+			document.getElementById('updateConfirmBtn').addEventListener('click', function() {
+				saveData(siteData);
+				parentData = siteData;
+				
+				// Проверяем, есть ли выбранные дети в новой версии данных
+				const childIds = siteData.children.map(c => c.id);
+				const validSelected = selectedChildren.filter(id => childIds.includes(id));
+				if (validSelected.length !== selectedChildren.length) {
+					selectedChildren = validSelected;
+					saveSelected();
+				}
+				
+				status.textContent = '✅ Данные обновлены!';
+				result.innerHTML = `
+					<div style="background:#d4edda; padding:16px; border-radius:8px; border:1px solid #c3e6cb;">
+						<p style="color:#155724; font-weight:600;">✅ Данные успешно обновлены!</p>
+						<p style="color:#155724; font-size:13px; margin-top:8px;">Можете закрыть это окно и пользоваться актуальными данными.</p>
+					</div>
+				`;
+				renderMain();
+				
+				// Если дети не выбраны — показываем модалку
+				if (selectedChildren.length === 0) {
+					setTimeout(() => {
+						showChildSelectionModal();
+					}, 500);
+				}
+				
+				setTimeout(() => {
+					modal.style.display = 'none';
+				}, 2000);
+			});
         } else {
             const siteVersion = getDataVersion(siteData);
             const currentVersion = getDataVersion(currentData);
