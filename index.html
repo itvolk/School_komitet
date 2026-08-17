@@ -459,7 +459,7 @@
             <button class="tab-btn" data-tab="tabSettings">⚙️ Настройки</button>
         </div>
 
-        <!-- Вкладка: Платежи -->
+        <!-- Вкладка: Платежи (без плательщика) -->
         <div id="tabIncomes" class="tab-content active">
             <div class="card">
                 <h3>💳 Платежи</h3>
@@ -492,8 +492,8 @@
                 </div>
                 <div class="table-wrapper">
                     <table>
-                        <thead><tr><th>Дата</th><th>Ученик</th><th>Плательщик</th><th>Сумма</th><th>Тип</th><th>Комментарий</th></tr></thead>
-                        <tbody id="incomesTableBody"><tr><td colspan="6" style="text-align:center;color:#999;">Нет данных</td></tr></tbody>
+                        <thead><tr><th>Дата</th><th>Ученик</th><th>Сумма</th><th>Тип</th><th>Комментарий</th></tr></thead>
+                        <tbody id="incomesTableBody"><tr><td colspan="5" style="text-align:center;color:#999;">Нет данных</td></tr></tbody>
                     </table>
                 </div>
             </div>
@@ -571,14 +571,14 @@
             </div>
         </div>
 
-        <!-- Вкладка: Класс -->
+        <!-- Вкладка: Класс (без родителей) -->
         <div id="tabClass" class="tab-content">
             <div class="card">
                 <h3>👨‍👩‍👧‍👦 Класс</h3>
                 <div class="table-wrapper">
                     <table>
-                        <thead><tr><th>#</th><th>Ученик</th><th>Дата рождения</th><th>Родители</th></tr></thead>
-                        <tbody id="classTableBody"><tr><td colspan="4" style="text-align:center;color:#999;">Нет данных</td></tr></tbody>
+                        <thead><tr><th>#</th><th>Ученик</th><th>Дата рождения</th></tr></thead>
+                        <tbody id="classTableBody"><tr><td colspan="3" style="text-align:center;color:#999;">Нет данных</td></tr></tbody>
                     </table>
                 </div>
             </div>
@@ -663,7 +663,7 @@
     </div>
 </div>
 
-<!-- Модалка "Обновление с сайта" (исправлена — убрана лишняя кнопка) -->
+<!-- Модалка "Обновление с сайта" -->
 <div id="updateModal" class="modal-overlay">
     <div class="modal-content">
         <span class="modal-close" id="updateModalClose">&times;</span>
@@ -764,7 +764,6 @@ function saveSelected() {
 // === ЗАГРУЗКА ДАННЫХ С САЙТА ===
 async function loadDataFromSite() {
     try {
-        // Добавляем случайный параметр для обхода кэша
         const url = SITE_DATA_URL + '?t=' + Date.now();
         const response = await fetch(url, {
             cache: 'no-cache',
@@ -810,7 +809,7 @@ function isNewerData(newData, oldData) {
     return newFull > oldFull;
 }
 
-// === ОБНОВЛЕНИЕ ДАННЫХ (с полной обработкой ошибок) ===
+// === ОБНОВЛЕНИЕ ДАННЫХ ===
 async function updateData() {
     const modal = document.getElementById('updateModal');
     const status = document.getElementById('updateStatus');
@@ -821,7 +820,6 @@ async function updateData() {
     result.innerHTML = '';
     
     try {
-        // Проверяем наличие интернета
         if (!navigator.onLine) {
             status.textContent = '📡 Нет подключения к интернету';
             result.innerHTML = `
@@ -837,15 +835,11 @@ async function updateData() {
                         </button>
                         из чата класса.
                     </p>
-                    <button class="btn btn-outline btn-sm" onclick="document.getElementById('updateModal').style.display='none';" style="margin-top:8px; width:100%;">
-                        Закрыть
-                    </button>
                 </div>
             `;
             return;
         }
         
-        // Пробуем загрузить данные с сайта с таймаутом
         const controller = new AbortController();
         const timeoutId = setTimeout(() => controller.abort(), 10000);
         
@@ -874,9 +868,6 @@ async function updateData() {
                         <p style="color:#856404; margin-top:8px; font-size:13px;">
                             <strong>Решение:</strong> проверьте подключение к интернету или попробуйте позже.
                         </p>
-                        <button class="btn btn-outline btn-sm" onclick="document.getElementById('updateModal').style.display='none';" style="margin-top:8px; width:100%;">
-                            Закрыть
-                        </button>
                     </div>
                 `;
                 return;
@@ -900,9 +891,6 @@ async function updateData() {
                             </button>
                             из чата класса.
                         </p>
-                        <button class="btn btn-outline btn-sm" onclick="document.getElementById('updateModal').style.display='none';" style="margin-top:8px; width:100%;">
-                            Закрыть
-                        </button>
                     </div>
                 `;
                 return;
@@ -910,7 +898,6 @@ async function updateData() {
             throw new Error(`HTTP ${response.status}: ${response.statusText}`);
         }
         
-        // Парсим данные
         let siteData;
         try {
             siteData = await response.json();
@@ -928,15 +915,11 @@ async function updateData() {
                             📤 ручной импорт файла
                         </button>
                     </p>
-                    <button class="btn btn-outline btn-sm" onclick="document.getElementById('updateModal').style.display='none';" style="margin-top:8px; width:100%;">
-                        Закрыть
-                    </button>
                 </div>
             `;
             return;
         }
         
-        // Проверяем структуру данных
         if (!siteData.children || !siteData.transactions) {
             status.textContent = '❌ Неверный формат данных';
             result.innerHTML = `
@@ -951,9 +934,6 @@ async function updateData() {
                             📤 ручной импорт файла
                         </button>
                     </p>
-                    <button class="btn btn-outline btn-sm" onclick="document.getElementById('updateModal').style.display='none';" style="margin-top:8px; width:100%;">
-                        Закрыть
-                    </button>
                 </div>
             `;
             return;
@@ -1011,9 +991,6 @@ async function updateData() {
                         <div><strong>📅 Дата на устройстве:</strong> ${currentVersion.fullDate || 'нет данных'}</div>
                         <div><strong>👨‍👩‍👧‍👦 Учеников:</strong> ${childrenCount} ${label}</div>
                     </div>
-                    <button class="btn btn-outline btn-sm" onclick="document.getElementById('updateModal').style.display='none';" style="margin-top:8px; width:100%;">
-                        Закрыть
-                    </button>
                 </div>
             `;
         }
@@ -1032,9 +1009,6 @@ async function updateData() {
                         📤 ручной импорт файла
                     </button>
                 </p>
-                <button class="btn btn-outline btn-sm" onclick="document.getElementById('updateModal').style.display='none';" style="margin-top:8px; width:100%;">
-                    Закрыть
-                </button>
             </div>
         `;
     }
@@ -1287,7 +1261,7 @@ function renderMain() {
     updateFilterChildTags();
 }
 
-// === ИНФОРМАЦИЯ О ДАННЫХ (с правильным склонением) ===
+// === ИНФОРМАЦИЯ О ДАННЫХ ===
 function renderDataInfo() {
     const container = document.getElementById('dataInfo');
     if (!parentData) {
@@ -1382,7 +1356,7 @@ function renderDebts() {
     tableBody.innerHTML = html;
 }
 
-// === ПРИХОДЫ ===
+// === ПРИХОДЫ (без плательщика) ===
 function renderIncomesTable(filterFrom, filterTo, filterChildIds, filterFund) {
     const tbody = document.getElementById('incomesTableBody');
     let transactions = getTransactions().filter(t => t.type === 'income');
@@ -1401,7 +1375,7 @@ function renderIncomesTable(filterFrom, filterTo, filterChildIds, filterFund) {
     }
     
     if (transactions.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;color:#999;">Нет платежей</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;color:#999;">Нет платежей</td></tr>';
         return;
     }
     
@@ -1411,7 +1385,6 @@ function renderIncomesTable(filterFrom, filterTo, filterChildIds, filterFund) {
         html += `<tr>
             <td>${formatDate(t.date)}</td>
             <td><strong>${t.childName || 'не указан'}</strong></td>
-            <td>${t.parentName || 'не указан'}</td>
             <td>${t.amount.toFixed(2)} ₽</td>
             <td><span class="fund-tag">${t.fund || 'Общий сбор'}</span></td>
             <td>${t.comment || ''}</td>
@@ -1455,19 +1428,18 @@ function renderExpensesTable(filterFrom, filterTo, filterCategory) {
     tbody.innerHTML = html;
 }
 
-// === КЛАСС ===
+// === КЛАСС (без родителей) ===
 function renderClassTable() {
     const tbody = document.getElementById('classTableBody');
     const children = getChildren();
     
     if (children.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;color:#999;">Нет данных</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="3" style="text-align:center;color:#999;">Нет данных</td></tr>';
         return;
     }
     
     let html = '';
     children.forEach((c, i) => {
-        const parentsList = c.parents && c.parents.length > 0 ? c.parents.join(', ') : 'не указаны';
         const birthdate = c.birthdate ? formatDate(c.birthdate) : '—';
         
         const today = new Date();
@@ -1481,7 +1453,6 @@ function renderClassTable() {
                 ${isBirthdayMonth ? '<span class="badge birthday" title="День рождения в этом месяце!">🎂</span>' : ''}
             </td>
             <td>${birthdate}</td>
-            <td>${parentsList}</td>
         </tr>`;
     });
     tbody.innerHTML = html;
@@ -1776,7 +1747,7 @@ function generateReport(from, to, childFilter) {
         const typeLabel = t.type === 'income' ? 'Приход' : 'Расход';
         let desc = '';
         if (t.type === 'income') {
-            desc = `${t.childName || 'неизвестный'} — от: ${t.parentName || 'не указан'}` + (t.comment ? ' ('+t.comment+')' : '');
+            desc = `${t.childName || 'неизвестный'}${t.comment ? ' ('+t.comment+')' : ''}`;
             if (t.fund) desc += ` [${t.fund}]`;
         } else {
             desc = (t.description || '') + ' (' + (t.category || 'без категории') + ')';
@@ -1867,7 +1838,6 @@ document.addEventListener('DOMContentLoaded', function() {
     
     document.getElementById('clearDataBtn').addEventListener('click', clearData);
     
-    // Модалка обновления
     document.getElementById('updateModalClose').addEventListener('click', function() {
         document.getElementById('updateModal').style.display = 'none';
     });
