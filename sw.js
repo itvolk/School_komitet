@@ -1,25 +1,20 @@
-// Cache name
-const CACHE_NAME = 'treasurer-cache-v1';
-
-// Files to cache
+const CACHE_NAME = 'parent-cache-v1';
 const urlsToCache = [
-  '/',
-  '/index.html',
-  '/manifest.json'
+  '.',
+  'index.html',
+  'manifest.json'
 ];
 
-// Install event
 self.addEventListener('install', function(event) {
   event.waitUntil(
     caches.open(CACHE_NAME)
       .then(function(cache) {
-        console.log('Cache opened');
+        console.log('✅ Кэш для родителей открыт');
         return cache.addAll(urlsToCache);
       })
   );
 });
 
-// Activate event
 self.addEventListener('activate', function(event) {
   const cacheWhitelist = [CACHE_NAME];
   event.waitUntil(
@@ -35,7 +30,6 @@ self.addEventListener('activate', function(event) {
   );
 });
 
-// Fetch event
 self.addEventListener('fetch', function(event) {
   event.respondWith(
     caches.match(event.request)
