@@ -1,1 +1,17 @@
-
+{
+  "version": "1.0",
+  "exportDate": "",
+  "exportTime": "",
+  "balance": 0,
+  "totalIncome": 0,
+  "totalExpense": 0,
+  "funds": ["Общий сбор", "Театр", "Подарки", "Экскурсия", "Канцтовары"],
+  "fees": [],
+  "children": [],
+  "transactions": [],
+  "summary": {
+    "totalIncome": 0,
+    "totalExpense": 0,
+    "balance": 0
+  }
+}
