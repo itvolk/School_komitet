@@ -1,7 +1,7 @@
 {
-  "version": "1.0",
+  "version": "1.1",
   "exportDate": "2026-08-17",
-  "exportTime": "16:28:22",
+  "exportTime": "17:35:26",
   "balance": 38000,
   "totalIncome": 42000,
   "totalExpense": 4000,
@@ -24,251 +24,162 @@
     {
       "id": 1,
       "name": "Ведерникова Ольга Константиновна",
-      "birthdate": null,
-      "parents": [
-        "Константин Ведерников"
-      ]
+      "birthdate": null
     },
     {
       "id": 2,
       "name": "Виноградова Варвара Владиславовна",
-      "birthdate": null,
-      "parents": [
-        "Руслана Виноградова"
-      ]
+      "birthdate": null
     },
     {
       "id": 3,
       "name": "Волков Артём Дмитриевич",
-      "birthdate": null,
-      "parents": [
-        "Волков Дмитрий Владимирович",
-        "Волкова Алина Викторовна"
-      ]
+      "birthdate": "2019-02-21"
     },
     {
       "id": 4,
       "name": "Голотин Владимир Владимирович",
-      "birthdate": null,
-      "parents": [
-        "Виктория Голотина"
-      ]
+      "birthdate": null
     },
     {
       "id": 5,
       "name": "Ганноченко Варвара Дмитриевна",
-      "birthdate": null,
-      "parents": [
-        "Мария Ганноченко"
-      ]
+      "birthdate": null
     },
     {
       "id": 6,
       "name": "Голенков Ярослав Алексеевич",
-      "birthdate": null,
-      "parents": []
+      "birthdate": null
     },
     {
       "id": 7,
       "name": "Головина Алиса Руслановна",
-      "birthdate": null,
-      "parents": [
-        "Александра Головина"
-      ]
+      "birthdate": null
     },
     {
       "id": 8,
       "name": "Греков Герман Евгеньевич",
-      "birthdate": null,
-      "parents": []
+      "birthdate": null
     },
     {
       "id": 9,
       "name": "Дядюшкин Глеб Александрович",
-      "birthdate": null,
-      "parents": [
-        "Ангелина О."
-      ]
+      "birthdate": null
     },
     {
       "id": 10,
       "name": "Ефременко Дмитрий Витальевич",
-      "birthdate": null,
-      "parents": [
-        "Виталий Ефременко"
-      ]
+      "birthdate": null
     },
     {
       "id": 11,
       "name": "Ефременко Юрий Витальевич",
-      "birthdate": null,
-      "parents": [
-        "Виталий Ефременко"
-      ]
+      "birthdate": null
     },
     {
       "id": 12,
       "name": "Залялютдинова Алина Руслановна",
-      "birthdate": null,
-      "parents": [
-        "Ольга Ш."
-      ]
+      "birthdate": null
     },
     {
       "id": 13,
       "name": "Захаров Алексей Дмитриевич",
-      "birthdate": null,
-      "parents": [
-        "Ольга Захарова"
-      ]
+      "birthdate": null
     },
     {
       "id": 14,
       "name": "Зорин Евгений Дмитриевич",
-      "birthdate": null,
-      "parents": [
-        "Лилия Зорина"
-      ]
+      "birthdate": null
     },
     {
       "id": 15,
       "name": "Корзан Владислав Витальевич",
-      "birthdate": null,
-      "parents": [
-        "Ирина К."
-      ]
+      "birthdate": null
     },
     {
       "id": 16,
       "name": "Кузьминова Елена Дмитриевна",
-      "birthdate": null,
-      "parents": [
-        "Ольга К."
-      ]
+      "birthdate": null
     },
     {
       "id": 17,
       "name": "Кулагина Варвара Никитична",
-      "birthdate": null,
-      "parents": [
-        "Кулагин Никита"
-      ]
+      "birthdate": null
     },
     {
       "id": 18,
       "name": "Лычёв Арсений Александрович",
-      "birthdate": null,
-      "parents": [
-        "Оксана Лычёва"
-      ]
+      "birthdate": null
     },
     {
       "id": 19,
       "name": "Макаров Денис Алексеевич",
-      "birthdate": null,
-      "parents": [
-        "Юлия М."
-      ]
+      "birthdate": null
     },
     {
       "id": 20,
       "name": "Маковчук Матвей Александрович",
-      "birthdate": null,
-      "parents": [
-        "Ольга П."
-      ]
+      "birthdate": null
     },
     {
       "id": 21,
       "name": "Мельник Матвей Денисович",
-      "birthdate": null,
-      "parents": [
-        "Маргарита Мельник"
-      ]
+      "birthdate": null
     },
     {
       "id": 22,
       "name": "Омарова Агуль Курбановна",
-      "birthdate": null,
-      "parents": []
+      "birthdate": null
     },
     {
       "id": 23,
       "name": "Панфилова Ксения Никитична",
-      "birthdate": null,
-      "parents": [
-        "Виктория Панфилова"
-      ]
+      "birthdate": null
     },
     {
       "id": 24,
       "name": "Пискунов Роман Александрович",
-      "birthdate": null,
-      "parents": [
-        "Дарья Пискунова"
-      ]
+      "birthdate": null
     },
     {
       "id": 25,
       "name": "Плеханов Лев Константинович",
-      "birthdate": null,
-      "parents": [
-        "Александра Плеханова"
-      ]
+      "birthdate": null
     },
     {
       "id": 26,
       "name": "Пономарёва Василиса Дмитриевна",
-      "birthdate": null,
-      "parents": [
-        "Елена Пономарёва"
-      ]
+      "birthdate": null
     },
     {
       "id": 27,
       "name": "Приходько Иван Михайлович",
-      "birthdate": null,
-      "parents": [
-        "Анна Г."
-      ]
+      "birthdate": null
     },
     {
       "id": 28,
       "name": "Просверников Егор Александрович",
-      "birthdate": null,
-      "parents": []
+      "birthdate": null
     },
     {
       "id": 29,
       "name": "Суринова Майя Александровна",
-      "birthdate": null,
-      "parents": [
-        "Наталья Суринова"
-      ]
+      "birthdate": null
     },
     {
       "id": 30,
       "name": "Харченко Дмитрий Александрович",
-      "birthdate": null,
-      "parents": [
-        "Алина Харченко"
-      ]
+      "birthdate": null
     },
     {
       "id": 1786734759126.5105,
       "name": "Щепачева Полина Витальевна",
-      "birthdate": null,
-      "parents": [
-        "Щепачев Виталий"
-      ]
+      "birthdate": null
     },
     {
       "id": 1786735997224.7869,
       "name": "Ященко Арина Андреевна",
-      "birthdate": null,
-      "parents": [
-        "Юлия Ященко"
-      ]
+      "birthdate": null
     }
   ],
   "transactions": [
@@ -278,7 +189,6 @@
       "type": "income",
       "amount": 1500,
       "childName": "Виноградова Варвара Владиславовна",
-      "parentName": "Руслана Виноградова",
       "fund": "Общий сбор",
       "comment": null,
       "description": null,
@@ -291,7 +201,6 @@
       "type": "income",
       "amount": 1500,
       "childName": "Макаров Денис Алексеевич",
-      "parentName": "Юлия М.",
       "fund": "Общий сбор",
       "comment": null,
       "description": null,
@@ -304,7 +213,6 @@
       "type": "income",
       "amount": 1500,
       "childName": "Пономарёва Василиса Дмитриевна",
-      "parentName": "Елена Пономарёва",
       "fund": "Общий сбор",
       "comment": null,
       "description": null,
@@ -317,7 +225,6 @@
       "type": "income",
       "amount": 1500,
       "childName": "Дядюшкин Глеб Александрович",
-      "parentName": "Ангелина О.",
       "fund": "Общий сбор",
       "comment": null,
       "description": null,
@@ -330,7 +237,6 @@
       "type": "income",
       "amount": 1500,
       "childName": "Голотин Владимир Владимирович",
-      "parentName": "Виктория Голотина",
       "fund": "Общий сбор",
       "comment": null,
       "description": null,
@@ -343,7 +249,6 @@
       "type": "income",
       "amount": 1500,
       "childName": "Кузьминова Елена Дмитриевна",
-      "parentName": "Ольга К.",
       "fund": "Общий сбор",
       "comment": null,
       "description": null,
@@ -356,7 +261,6 @@
       "type": "income",
       "amount": 1500,
       "childName": "Корзан Владислав Витальевич",
-      "parentName": "Ирина К.",
       "fund": "Общий сбор",
       "comment": null,
       "description": null,
@@ -369,7 +273,6 @@
       "type": "income",
       "amount": 1500,
       "childName": "Залялютдинова Алина Руслановна",
-      "parentName": "Ольга Ш.",
       "fund": "Общий сбор",
       "comment": null,
       "description": null,
@@ -382,7 +285,6 @@
       "type": "income",
       "amount": 1500,
       "childName": "Ведерникова Ольга Константиновна",
-      "parentName": "Константин Ведерников",
       "fund": "Общий сбор",
       "comment": null,
       "description": null,
@@ -395,7 +297,6 @@
       "type": "income",
       "amount": 1500,
       "childName": "Панфилова Ксения Никитична",
-      "parentName": "Виктория Панфилова",
       "fund": "Общий сбор",
       "comment": null,
       "description": null,
@@ -408,7 +309,6 @@
       "type": "income",
       "amount": 1500,
       "childName": "Ефременко Дмитрий Витальевич",
-      "parentName": "Виталий Ефременко",
       "fund": "Общий сбор",
       "comment": null,
       "description": null,
@@ -421,7 +321,6 @@
       "type": "income",
       "amount": 1500,
       "childName": "Ефременко Юрий Витальевич",
-      "parentName": "не указан",
       "fund": "Общий сбор",
       "comment": null,
       "description": null,
@@ -434,7 +333,6 @@
       "type": "income",
       "amount": 1500,
       "childName": "Зорин Евгений Дмитриевич",
-      "parentName": "Лилия Зорина",
       "fund": "Общий сбор",
       "comment": null,
       "description": null,
@@ -447,7 +345,6 @@
       "type": "income",
       "amount": 1500,
       "childName": "Пискунов Роман Александрович",
-      "parentName": "Дарья Пискунова",
       "fund": "Общий сбор",
       "comment": null,
       "description": null,
@@ -460,7 +357,6 @@
       "type": "income",
       "amount": 1500,
       "childName": "Лычёв Арсений Александрович",
-      "parentName": "Оксана Лычёва",
       "fund": "Общий сбор",
       "comment": null,
       "description": null,
@@ -473,7 +369,6 @@
       "type": "income",
       "amount": 1500,
       "childName": "Плеханов Лев Константинович",
-      "parentName": "Александра Плеханова",
       "fund": "Общий сбор",
       "comment": null,
       "description": null,
@@ -486,7 +381,6 @@
       "type": "income",
       "amount": 1500,
       "childName": "Мельник Матвей Денисович",
-      "parentName": "Маргарита Мельник",
       "fund": "Общий сбор",
       "comment": null,
       "description": null,
@@ -499,7 +393,6 @@
       "type": "income",
       "amount": 1500,
       "childName": "Головина Алиса Руслановна",
-      "parentName": "Александра Головина",
       "fund": "Общий сбор",
       "comment": null,
       "description": null,
@@ -512,7 +405,6 @@
       "type": "income",
       "amount": 1500,
       "childName": "Маковчук Матвей Александрович",
-      "parentName": "Ольга П.",
       "fund": "Общий сбор",
       "comment": null,
       "description": null,
@@ -525,7 +417,6 @@
       "type": "income",
       "amount": 1500,
       "childName": "Щепачева Полина Витальевна",
-      "parentName": "Щепачев Виталий",
       "fund": "Общий сбор",
       "comment": null,
       "description": null,
@@ -538,7 +429,6 @@
       "type": "income",
       "amount": 1500,
       "childName": "Кулагина Варвара Никитична",
-      "parentName": "Кулагин Никита",
       "fund": "Общий сбор",
       "comment": null,
       "description": null,
@@ -551,7 +441,6 @@
       "type": "income",
       "amount": 1500,
       "childName": "Ященко Арина Андреевна",
-      "parentName": "Юлия Ященко",
       "fund": "Общий сбор",
       "comment": null,
       "description": null,
@@ -564,7 +453,6 @@
       "type": "income",
       "amount": 1500,
       "childName": "Захаров Алексей Дмитриевич",
-      "parentName": "Ольга Захарова",
       "fund": "Общий сбор",
       "comment": null,
       "description": null,
@@ -577,7 +465,6 @@
       "type": "income",
       "amount": 1500,
       "childName": "Ганноченко Варвара Дмитриевна",
-      "parentName": "Мария Ганноченко",
       "fund": "Общий сбор",
       "comment": null,
       "description": null,
@@ -590,7 +477,6 @@
       "type": "income",
       "amount": 1500,
       "childName": "Приходько Иван Михайлович",
-      "parentName": "Анна Г.",
       "fund": "Общий сбор",
       "comment": null,
       "description": null,
@@ -603,7 +489,6 @@
       "type": "expense",
       "amount": 4000,
       "childName": null,
-      "parentName": null,
       "fund": null,
       "comment": null,
       "description": "Предоплата за ленты",
@@ -622,7 +507,6 @@
       "type": "income",
       "amount": 1500,
       "childName": "Волков Артём Дмитриевич",
-      "parentName": "Волков Дмитрий Владимирович",
       "fund": "Общий сбор",
       "comment": null,
       "description": null,
@@ -635,7 +519,6 @@
       "type": "income",
       "amount": 1500,
       "childName": "Суринова Майя Александровна",
-      "parentName": "Наталья Суринова",
       "fund": "Общий сбор",
       "comment": null,
       "description": null,
@@ -648,7 +531,6 @@
       "type": "income",
       "amount": 1500,
       "childName": "Харченко Дмитрий Александрович",
-      "parentName": "Алина Харченко",
       "fund": "Общий сбор",
       "comment": null,
       "description": null,
