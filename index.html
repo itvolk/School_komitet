@@ -691,17 +691,17 @@ function getChildrenLabel(count) {
 }
 
 // === РЕГИСТРАЦИЯ SERVICE WORKER ===
-if ('serviceWorker' in navigator) {
-    window.addEventListener('load', function() {
-        navigator.serviceWorker.register('sw-parent.js')
-            .then(function(registration) {
-                console.log('✅ Service Worker для родителей зарегистрирован');
-            })
-            .catch(function(error) {
-                console.error('❌ Ошибка регистрации Service Worker:', error);
-            });
-    });
-}
+//if ('serviceWorker' in navigator) {
+//    window.addEventListener('load', function() {
+//        navigator.serviceWorker.register('sw-parent.js')
+ //           .then(function(registration) {
+ //               console.log('✅ Service Worker для родителей зарегистрирован');
+ //           })
+ //           .catch(function(error) {
+ //               console.error('❌ Ошибка регистрации Service Worker:', error);
+ //           });
+ //   });
+//}
 
 // === КОНСТАНТЫ ===
 const DATA_KEY = 'parent_data';
