@@ -785,7 +785,7 @@ async function loadDataFromSite() {
 
 // === СРАВНЕНИЕ ДАТ ЭКСПОРТА ===
 function getDataVersion(data) {
-    if (!data) return null;
+    if (!data) return { exportDate: '', exportTime: '', fullDate: 'нет данных' };
     return {
         exportDate: data.exportDate || '',
         exportTime: data.exportTime || '',
@@ -1264,10 +1264,13 @@ function renderMain() {
 // === ИНФОРМАЦИЯ О ДАННЫХ ===
 function renderDataInfo() {
     const container = document.getElementById('dataInfo');
+    if (!container) return;
+    
     if (!parentData) {
         container.textContent = '📭 Нет данных';
         return;
     }
+    
     const version = getDataVersion(parentData);
     const childrenCount = parentData.children ? parentData.children.length : 0;
     const label = getChildrenLabel(childrenCount);
