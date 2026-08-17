@@ -1,7 +1,7 @@
 const CACHE_NAME = 'parent-cache-v1';
 const urlsToCache = [
   '.',
-  'index-parent.html',
+  'index.html',
   'manifest-parent.json',
   'data/parents.json'
 ];
