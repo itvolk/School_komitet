@@ -1,9 +1,9 @@
 {
   "version": "1.1",
   "exportDate": "2026-08-18",
-  "exportTime": "21:25:31",
-  "balance": 33115,
-  "totalIncome": 47500,
+  "exportTime": "22:14:36",
+  "balance": 34115,
+  "totalIncome": 48500,
   "totalExpense": 14385,
   "funds": [
     "Общий сбор",
@@ -692,11 +692,35 @@
       "description": null,
       "category": null,
       "files": []
+    },
+    {
+      "id": "1787079514167_13j822",
+      "date": "2026-08-18",
+      "type": "income",
+      "amount": 500,
+      "childName": "Харченко Дмитрий Александрович",
+      "fund": "Канцтовары",
+      "comment": null,
+      "description": null,
+      "category": null,
+      "files": []
+    },
+    {
+      "id": "1787079713171_pmqxof",
+      "date": "2026-08-18",
+      "type": "income",
+      "amount": 500,
+      "childName": "Волков Артём Дмитриевич",
+      "fund": "Канцтовары",
+      "comment": null,
+      "description": null,
+      "category": null,
+      "files": []
     }
   ],
   "summary": {
-    "totalIncome": 47500,
+    "totalIncome": 48500,
     "totalExpense": 14385,
-    "balance": 33115
+    "balance": 34115
   }
 }
