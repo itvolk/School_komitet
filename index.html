@@ -805,6 +805,19 @@
 <script>
 console.log('✅ Страница для родителей загружена');
 
+// === ФУНКЦИЯ ДЛЯ ФОРМАТИРОВАНИЯ СУММ (убираем копейки если они .00) ===
+function formatAmount(amount) {
+    const rounded = Math.round(amount * 100) / 100;
+    if (Number.isInteger(rounded)) {
+        return rounded.toString();
+    }
+    return rounded.toFixed(2);
+}
+
+function formatAmountWithCurrency(amount) {
+    return formatAmount(amount) + ' ₽';
+}
+
 // === ФУНКЦИЯ СКЛОНЕНИЯ ===
 function pluralize(count, one, few, many) {
     const n = Math.abs(count);
@@ -1644,7 +1657,7 @@ function renderBalance() {
     });
     
     const el = document.getElementById('balanceDisplay');
-    el.textContent = balance.toFixed(2) + ' ₽';
+    el.textContent = formatAmountWithCurrency(balance);
     el.className = 'balance ' + (balance >= 0 ? 'positive' : 'negative');
 }
 
@@ -1674,15 +1687,15 @@ function renderDebts() {
     
     summaryContainer.innerHTML = `
         <div class="debt-item">
-            <div class="amount" style="color:${totalDebt > 0 ? '#e74c3c' : '#27ae60'}">${totalDebt.toFixed(2)} ₽</div>
+            <div class="amount" style="color:${totalDebt > 0 ? '#e74c3c' : '#27ae60'}">${formatAmountWithCurrency(totalDebt)}</div>
             <div class="label">Общая задолженность</div>
         </div>
         <div class="debt-item">
-            <div class="amount">${totalFee.toFixed(2)} ₽</div>
+            <div class="amount">${formatAmountWithCurrency(totalFee)}</div>
             <div class="label">Обязательно к оплате</div>
         </div>
         <div class="debt-item">
-            <div class="amount" style="color:#27ae60;">${totalPaid.toFixed(2)} ₽</div>
+            <div class="amount" style="color:#27ae60;">${formatAmountWithCurrency(totalPaid)}</div>
             <div class="label">Уже внесено</div>
         </div>
     `;
@@ -1693,9 +1706,9 @@ function renderDebts() {
         html += `<tr>
             <td><strong>${d.childName}</strong></td>
             <td><span class="fund-tag">${d.fund}</span></td>
-            <td>${d.fee.toFixed(2)} ₽</td>
-            <td>${d.paid.toFixed(2)} ₽</td>
-            <td><span class="badge ${cls}">${d.debt.toFixed(2)} ₽</span></td>
+            <td>${formatAmountWithCurrency(d.fee)}</td>
+            <td>${formatAmountWithCurrency(d.paid)}</td>
+            <td><span class="badge ${cls}">${formatAmountWithCurrency(d.debt)}</span></td>
         </tr>`;
     });
     tableBody.innerHTML = html;
@@ -1734,15 +1747,15 @@ function renderDebtors(fundFilter, minDebt) {
             <div class="label">👨‍👩‍👧‍👦 Должников</div>
         </div>
         <div class="debt-item">
-            <div class="amount" style="color:#e74c3c;">${totalDebt.toFixed(2)} ₽</div>
+            <div class="amount" style="color:#e74c3c;">${formatAmountWithCurrency(totalDebt)}</div>
             <div class="label">Общая задолженность</div>
         </div>
         <div class="debt-item">
-            <div class="amount">${totalFee.toFixed(2)} ₽</div>
+            <div class="amount">${formatAmountWithCurrency(totalFee)}</div>
             <div class="label">Общая сумма взносов</div>
         </div>
         <div class="debt-item">
-            <div class="amount" style="color:#27ae60;">${totalPaid.toFixed(2)} ₽</div>
+            <div class="amount" style="color:#27ae60;">${formatAmountWithCurrency(totalPaid)}</div>
             <div class="label">Уже внесено</div>
         </div>
     `;
@@ -1753,7 +1766,6 @@ function renderDebtors(fundFilter, minDebt) {
         let badgeClass = 'debt-high';
         let badgeText = '🔴';
         
-        // Небольшой долг до 1000, средний до 2000
         if (d.totalDebt < 1000) {
             amountClass = 'low';
             badgeClass = 'debt-low';
@@ -1765,7 +1777,7 @@ function renderDebtors(fundFilter, minDebt) {
         }
         
         const fundDetailsHtml = d.fundDetails.map(fd => 
-            `<span class="fund-tag">${fd.fund}: ${fd.debt.toFixed(2)} ₽</span>`
+            `<span class="fund-tag">${fd.fund}: ${formatAmountWithCurrency(fd.debt)}</span>`
         ).join(' ');
         
         html += `
@@ -1776,14 +1788,14 @@ function renderDebtors(fundFilter, minDebt) {
                         <span class="badge ${badgeClass} debtor-badge">${badgeText}</span>
                     </div>
                     <div class="debtor-details">
-                        Обязательно: ${d.totalFee.toFixed(2)} ₽ • Внесено: ${d.totalPaid.toFixed(2)} ₽
+                        Обязательно: ${formatAmountWithCurrency(d.totalFee)} • Внесено: ${formatAmountWithCurrency(d.totalPaid)}
                     </div>
                     <div style="margin-top:4px;">
                         ${fundDetailsHtml}
                     </div>
                 </div>
                 <div class="debtor-amount ${amountClass}">
-                    ${d.totalDebt.toFixed(2)} ₽
+                    ${formatAmountWithCurrency(d.totalDebt)}
                 </div>
             </div>
         `;
@@ -1821,7 +1833,7 @@ function renderIncomesTable(filterFrom, filterTo, filterChildIds, filterFund) {
         html += `<tr>
             <td>${formatDate(t.date)}</td>
             <td><strong>${t.childName || 'не указан'}</strong></td>
-            <td>${t.amount.toFixed(2)} ₽</td>
+            <td>${formatAmountWithCurrency(t.amount)}</td>
             <td><span class="fund-tag">${t.fund || 'Общий сбор'}</span></td>
             <td>${t.comment || ''}</td>
         </tr>`;
@@ -1855,7 +1867,7 @@ function renderExpensesTable(filterFrom, filterTo, filterCategory) {
         }
         html += `<tr>
             <td>${formatDate(t.date)}</td>
-            <td>${t.amount.toFixed(2)} ₽</td>
+            <td>${formatAmountWithCurrency(t.amount)}</td>
             <td><span class="badge expense">${t.category || 'без категории'}</span></td>
             <td>${t.description || ''}</td>
             <td>${fileHtml}</td>
@@ -2180,9 +2192,9 @@ function generateReport(from, to, childFilter) {
         <div style="background:#f1f4f9;padding:12px;border-radius:8px;margin-bottom:12px;">
             <div style="display:flex; flex-wrap:wrap; gap:12px; font-size:13px;">
                 <div><strong>📅 Период:</strong> ${periodLabel}</div>
-                <div><strong>📈 Приходов:</strong> <span style="color:#27ae60;font-weight:700;">${income.toFixed(2)} ₽</span></div>
-                <div><strong>📉 Расходов:</strong> <span style="color:#e74c3c;font-weight:700;">${expense.toFixed(2)} ₽</span></div>
-                <div><strong>💰 Баланс:</strong> <span style="font-weight:700;color:${balance>=0?'#27ae60':'#e74c3c'};">${balance.toFixed(2)} ₽</span></div>
+                <div><strong>📈 Приходов:</strong> <span style="color:#27ae60;font-weight:700;">${formatAmountWithCurrency(income)}</span></div>
+                <div><strong>📉 Расходов:</strong> <span style="color:#e74c3c;font-weight:700;">${formatAmountWithCurrency(expense)}</span></div>
+                <div><strong>💰 Баланс:</strong> <span style="font-weight:700;color:${balance>=0?'#27ae60':'#e74c3c'};">${formatAmountWithCurrency(balance)}</span></div>
                 <div><strong>📊 Всего:</strong> ${transactions.length}</div>
             </div>
         </div>
@@ -2204,7 +2216,7 @@ function generateReport(from, to, childFilter) {
         html += `<tr>
             <td>${formatDate(t.date)}</td>
             <td><span class="badge ${t.type === 'income' ? 'income' : 'expense'}">${typeLabel}</span></td>
-            <td>${t.amount.toFixed(2)} ₽</td>
+            <td>${formatAmountWithCurrency(t.amount)}</td>
             <td>${desc}</td>
         </tr>`;
     });
