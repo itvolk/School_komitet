@@ -1,9 +1,9 @@
 {
   "version": "1.1",
   "exportDate": "2026-08-18",
-  "exportTime": "17:59:20",
-  "balance": 29115,
-  "totalIncome": 43500,
+  "exportTime": "21:25:31",
+  "balance": 33115,
+  "totalIncome": 47500,
   "totalExpense": 14385,
   "funds": [
     "Общий сбор",
@@ -596,11 +596,107 @@
       "description": null,
       "category": null,
       "files": []
+    },
+    {
+      "id": "1787069039521_1m3938",
+      "date": "2026-08-18",
+      "type": "income",
+      "amount": 500,
+      "childName": "Головина Алиса Руслановна",
+      "fund": "Канцтовары",
+      "comment": null,
+      "description": null,
+      "category": null,
+      "files": []
+    },
+    {
+      "id": "1787069056140_tu95wt",
+      "date": "2026-08-18",
+      "type": "income",
+      "amount": 500,
+      "childName": "Зорин Евгений Дмитриевич",
+      "fund": "Канцтовары",
+      "comment": null,
+      "description": null,
+      "category": null,
+      "files": []
+    },
+    {
+      "id": "1787069084653_m6bfcu",
+      "date": "2026-08-18",
+      "type": "income",
+      "amount": 500,
+      "childName": "Плеханов Лев Константинович",
+      "fund": "Канцтовары",
+      "comment": null,
+      "description": null,
+      "category": null,
+      "files": []
+    },
+    {
+      "id": "1787069106564_too3se",
+      "date": "2026-08-18",
+      "type": "income",
+      "amount": 500,
+      "childName": "Лычёв Арсений Александрович",
+      "fund": "Канцтовары",
+      "comment": null,
+      "description": null,
+      "category": null,
+      "files": []
+    },
+    {
+      "id": "1787069122414_visofj",
+      "date": "2026-08-18",
+      "type": "income",
+      "amount": 500,
+      "childName": "Голотин Владимир Владимирович",
+      "fund": "Канцтовары",
+      "comment": null,
+      "description": null,
+      "category": null,
+      "files": []
+    },
+    {
+      "id": "1787069275459_do809u",
+      "date": "2026-08-18",
+      "type": "income",
+      "amount": 500,
+      "childName": "Ганноченко Варвара Дмитриевна",
+      "fund": "Канцтовары",
+      "comment": null,
+      "description": null,
+      "category": null,
+      "files": []
+    },
+    {
+      "id": "1787070187140_fz3wjx",
+      "date": "2026-08-18",
+      "type": "income",
+      "amount": 500,
+      "childName": "Ведерникова Ольга Константиновна",
+      "fund": "Канцтовары",
+      "comment": null,
+      "description": null,
+      "category": null,
+      "files": []
+    },
+    {
+      "id": "1787077476719_2s2nxc",
+      "date": "2026-08-18",
+      "type": "income",
+      "amount": 500,
+      "childName": "Макаров Денис Алексеевич",
+      "fund": "Канцтовары",
+      "comment": null,
+      "description": null,
+      "category": null,
+      "files": []
     }
   ],
   "summary": {
-    "totalIncome": 43500,
+    "totalIncome": 47500,
     "totalExpense": 14385,
-    "balance": 29115
+    "balance": 33115
   }
 }
