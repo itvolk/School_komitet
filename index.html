@@ -75,8 +75,6 @@
         .btn-contact:hover { background: #8e44ad; }
         .btn-update { background: #f39c12; color: #fff; }
         .btn-update:hover { background: #e67e22; }
-        .btn-check { background: #6c757d; color: #fff; }
-        .btn-check:hover { background: #5a6268; }
         .hidden { display: none; }
         
         .tabs { 
@@ -100,6 +98,8 @@
             flex: 0 0 auto;
         }
         .tab-btn.active { background: #4f8cf7; color: #fff; }
+        .tab-btn.debtor-tab { background: #f8d7da; color: #721c24; }
+        .tab-btn.debtor-tab.active { background: #e74c3c; color: #fff; }
         .tab-content { display: none; }
         .tab-content.active { display: block; }
         
@@ -134,6 +134,10 @@
         .badge.income { background: #d4edda; color: #155724; }
         .badge.expense { background: #f8d7da; color: #721c24; }
         .badge.debt { background: #fff3cd; color: #856404; }
+        .badge.debt-high { background: #f8d7da; color: #721c24; }
+        .badge.debt-medium { background: #fff3cd; color: #856404; }
+        .badge.debt-low { background: #d1ecf1; color: #0c5460; }
+        .badge.debt-zero { background: #d4edda; color: #155724; }
         .badge.fund { background: #d1ecf1; color: #0c5460; }
         .badge.period { background: #e8daef; color: #6c3483; }
         .badge.birthday { background: #fce4ec; color: #c62828; }
@@ -191,6 +195,40 @@
             font-size: 12px;
             color: #888;
         }
+
+        .debtor-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 16px;
+            background: #fff;
+            border-radius: 8px;
+            border: 1px solid #e9ecf0;
+            margin-bottom: 8px;
+            transition: 0.2s;
+        }
+        .debtor-item:hover {
+            border-color: #d0d7de;
+        }
+        .debtor-item .debtor-name {
+            font-weight: 600;
+            font-size: 16px;
+        }
+        .debtor-item .debtor-amount {
+            font-weight: 700;
+            font-size: 18px;
+        }
+        .debtor-item .debtor-details {
+            font-size: 12px;
+            color: #888;
+        }
+        .debtor-item .debtor-badge {
+            margin-left: 8px;
+        }
+        .debtor-item .debtor-amount.high { color: #e74c3c; }
+        .debtor-item .debtor-amount.medium { color: #f39c12; }
+        .debtor-item .debtor-amount.low { color: #2980b9; }
+        .debtor-item .debtor-amount.zero { color: #27ae60; }
 
         .period-selector { display: flex; gap: 6px; flex-wrap: wrap; align-items: center; }
         .period-selector .btn { padding: 6px 12px; font-size: 12px; min-height: 36px; }
@@ -341,6 +379,20 @@
             to { opacity: 1; transform: translateX(-50%) translateY(0); }
         }
 
+        /* Стили для должников */
+        .debtor-list-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            margin-bottom: 12px;
+            gap: 8px;
+        }
+        .debtor-list-header .debtor-count {
+            font-size: 14px;
+            color: #888;
+        }
+
         @media (max-width: 768px) {
             body { padding: 8px; }
             .container { padding: 12px; border-radius: 12px; }
@@ -403,6 +455,15 @@
                 padding: 12px 16px;
                 width: 95%;
             }
+            
+            .debtor-item {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 6px;
+            }
+            .debtor-item .debtor-amount {
+                align-self: flex-start;
+            }
         }
 
         @media (max-width: 480px) {
@@ -440,7 +501,6 @@
         <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px; margin-bottom:12px;">
             <h1 style="font-size:20px; margin:0;">📊 Фонд родительского кометета 1"Е" класса 2026 г.</h1>
             <div class="header-actions">
-                <button class="btn btn-check btn-sm" id="checkUpdatesBtn">🔍 Проверить</button>
                 <button class="btn btn-contact btn-sm" id="contactBtn">💬 Связь с автором</button>
                 <button class="btn btn-update btn-sm" id="updateFromSiteBtn">🔄 Обновить с сайта</button>
                 <button class="btn btn-success btn-sm" id="importBtn">📤 Импорт файла</button>
@@ -491,6 +551,7 @@
             <button class="tab-btn" data-tab="tabExpenses">📉 Расходы</button>
             <button class="tab-btn" data-tab="tabReport">📈 Отчёт</button>
             <button class="tab-btn" data-tab="tabClass">👨‍👩‍👧 Класс</button>
+            <button class="tab-btn debtor-tab" data-tab="tabDebtors">🔴 Должники</button>
             <button class="tab-btn" data-tab="tabSettings">⚙️ Настройки</button>
         </div>
 
@@ -616,6 +677,37 @@
                         <tbody id="classTableBody"><tr><td colspan="3" style="text-align:center;color:#999;">Нет данных</td></tr></tbody>
                     </table>
                 </div>
+            </div>
+        </div>
+
+        <!-- Вкладка: Должники -->
+        <div id="tabDebtors" class="tab-content">
+            <div class="card">
+                <h3>🔴 Должники</h3>
+                <p style="font-size:13px; color:#888; margin-bottom:12px;">
+                    Список учеников с задолженностями, отсортированный по сумме долга (от большего к меньшему).
+                </p>
+                
+                <div class="filter-section">
+                    <div class="flex-row">
+                        <div class="form-group">
+                            <label>Фонд</label>
+                            <select id="debtorFilterFund">
+                                <option value="all">Все фонды</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Минимальный долг</label>
+                            <input type="number" id="debtorFilterMin" placeholder="0" step="1" min="0" style="width:100%;">
+                        </div>
+                        <button class="btn btn-filter" id="debtorFilterApply">🔍 Применить</button>
+                        <button class="btn btn-outline" id="debtorFilterClear">✕ Сбросить</button>
+                    </div>
+                </div>
+
+                <div id="debtorSummary" class="debt-summary" style="margin-bottom:12px;"></div>
+                
+                <div id="debtorList"></div>
             </div>
         </div>
 
@@ -846,7 +938,6 @@ function isNewerData(newData, oldData) {
 
 // === УВЕДОМЛЕНИЕ О ДОСТУПНОМ ОБНОВЛЕНИИ ===
 function showUpdateNotification(siteData) {
-    // Проверяем, не показывали ли уже уведомление в этой сессии
     if (sessionStorage.getItem('update_notification_shown') === 'true') {
         return;
     }
@@ -855,7 +946,6 @@ function showUpdateNotification(siteData) {
     const childrenCount = siteData.children ? siteData.children.length : 0;
     const label = getChildrenLabel(childrenCount);
     
-    // Создаём уведомление
     const notification = document.createElement('div');
     notification.className = 'update-notification';
     notification.innerHTML = `
@@ -881,11 +971,8 @@ function showUpdateNotification(siteData) {
     `;
     
     document.body.appendChild(notification);
-    
-    // Отмечаем, что уведомление показано
     sessionStorage.setItem('update_notification_shown', 'true');
     
-    // Автоматически скрываем через 30 секунд
     setTimeout(() => {
         if (notification.parentElement) {
             notification.style.opacity = '0';
@@ -902,9 +989,6 @@ function showUpdateNotification(siteData) {
 // === АВТОМАТИЧЕСКАЯ ПРОВЕРКА ОБНОВЛЕНИЙ ===
 async function checkForUpdates(silent = true) {
     if (!navigator.onLine) {
-        if (!silent) {
-            alert('📡 Нет подключения к интернету');
-        }
         return false;
     }
     
@@ -924,9 +1008,6 @@ async function checkForUpdates(silent = true) {
         clearTimeout(timeoutId);
         
         if (!response.ok) {
-            if (!silent) {
-                alert(`❌ Ошибка загрузки: ${response.status}`);
-            }
             return false;
         }
         
@@ -940,28 +1021,50 @@ async function checkForUpdates(silent = true) {
         const isNewer = isNewerData(siteData, currentData);
         
         if (isNewer) {
-            // Есть новая версия
-            if (!silent) {
-                // Если пользователь сам нажал проверить - показываем модалку
-                await updateData();
-                return true;
-            } else {
-                // Автоматическая проверка - показываем уведомление
-                showUpdateNotification(siteData);
-                return true;
-            }
-        }
-        
-        if (!silent) {
-            alert('✅ У вас актуальная версия данных');
+            showUpdateNotification(siteData);
+            return true;
         }
         
         return false;
     } catch(e) {
         console.error('❌ Ошибка проверки обновлений:', e);
-        if (!silent) {
-            alert('❌ Не удалось проверить обновления: ' + e.message);
+        return false;
+    }
+}
+
+async function checkDataExists() {
+    if (!navigator.onLine) {
+        return false;
+    }
+    
+    try {
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 8000);
+        
+        const url = SITE_DATA_URL + '?t=' + Date.now();
+        const response = await fetch(url, {
+            signal: controller.signal,
+            cache: 'no-cache',
+            headers: {
+                'Cache-Control': 'no-cache, no-store, must-revalidate',
+                'Pragma': 'no-cache'
+            }
+        });
+        clearTimeout(timeoutId);
+        
+        if (!response.ok) {
+            return false;
         }
+        
+        const siteData = await response.json();
+        
+        if (!siteData.children || !siteData.transactions) {
+            return false;
+        }
+        
+        return true;
+    } catch(e) {
+        console.error('❌ Ошибка проверки наличия данных:', e);
         return false;
     }
 }
@@ -976,7 +1079,6 @@ async function updateData() {
     status.textContent = '⏳ Проверка обновлений...';
     result.innerHTML = '';
     
-    // Сбрасываем флаг уведомления
     sessionStorage.removeItem('update_notification_shown');
     
     try {
@@ -1125,7 +1227,6 @@ async function updateData() {
                 saveData(siteData);
                 parentData = siteData;
                 
-                // Проверяем, есть ли выбранные дети в новой версии данных
                 const childIds = siteData.children.map(c => c.id);
                 const validSelected = selectedChildren.filter(id => childIds.includes(id));
                 if (validSelected.length !== selectedChildren.length) {
@@ -1142,7 +1243,6 @@ async function updateData() {
                 `;
                 renderMain();
                 
-                // Если дети не выбраны — показываем модалку
                 if (selectedChildren.length === 0) {
                     setTimeout(() => {
                         showChildSelectionModal();
@@ -1216,7 +1316,6 @@ function importData(file) {
                 saveData(data);
                 parentData = data;
                 
-                // Проверяем выбранных детей
                 const childIds = data.children.map(c => c.id);
                 const validSelected = selectedChildren.filter(id => childIds.includes(id));
                 if (validSelected.length === 0) {
@@ -1394,6 +1493,73 @@ function calculateDebts(selectedChildIds) {
     return results;
 }
 
+// === РАСЧЁТ ДОЛЖНИКОВ (СВОДНЫЙ ПО УЧЕНИКАМ) ===
+function calculateDebtors(fundFilter, minDebt) {
+    const children = getChildren();
+    const transactions = getTransactions();
+    const funds = getFunds();
+    const debtors = [];
+    
+    if (children.length === 0 || funds.length === 0) return debtors;
+    
+    const allFees = parentData.fees || [];
+    if (allFees.length === 0) return debtors;
+    
+    let fees = allFees;
+    if (fundFilter && fundFilter !== 'all') {
+        fees = fees.filter(f => f.fund === fundFilter);
+    }
+    
+    if (fees.length === 0) return debtors;
+    
+    children.forEach(child => {
+        let totalDebt = 0;
+        let totalFee = 0;
+        let totalPaid = 0;
+        let fundDetails = [];
+        
+        fees.forEach(fee => {
+            const month = fee.month;
+            const fund = fee.fund;
+            const feeAmount = fee.amount;
+            
+            const paid = transactions
+                .filter(t => t.type === 'income' && 
+                    t.childName === child.name && 
+                    t.date && t.date.startsWith(month) && 
+                    t.fund === fund)
+                .reduce((sum, t) => sum + t.amount, 0);
+            
+            const debt = feeAmount - paid;
+            if (debt > 0) {
+                totalDebt += debt;
+                totalFee += feeAmount;
+                totalPaid += paid;
+                fundDetails.push({ fund, month, fee: feeAmount, paid, debt });
+            }
+        });
+        
+        if (totalDebt > 0) {
+            debtors.push({
+                childName: child.name,
+                childId: child.id,
+                totalDebt: totalDebt,
+                totalFee: totalFee,
+                totalPaid: totalPaid,
+                fundDetails: fundDetails
+            });
+        }
+    });
+    
+    debtors.sort((a, b) => b.totalDebt - a.totalDebt);
+    
+    if (minDebt && minDebt > 0) {
+        return debtors.filter(d => d.totalDebt >= minDebt);
+    }
+    
+    return debtors;
+}
+
 // === РЕНДЕРИНГ ===
 function renderMain() {
     const hasData = parentData && parentData.children && parentData.children.length > 0;
@@ -1419,12 +1585,14 @@ function renderMain() {
     renderIncomesTable();
     renderExpensesTable();
     renderClassTable();
+    renderDebtors();
     renderSettingsChildren();
     renderInfo();
     
     populateChildFilters();
     populateFundFilters();
     populateCategoryFilters();
+    populateDebtorFundFilters();
     
     const selected = getSelectedChildren();
     if (selected.length > 0) {
@@ -1531,6 +1699,97 @@ function renderDebts() {
         </tr>`;
     });
     tableBody.innerHTML = html;
+}
+
+// === ДОЛЖНИКИ ===
+function renderDebtors(fundFilter, minDebt) {
+    const container = document.getElementById('debtorList');
+    const summaryContainer = document.getElementById('debtorSummary');
+    
+    const debtors = calculateDebtors(fundFilter, minDebt);
+    
+    if (debtors.length === 0) {
+        const hasFees = parentData.fees && parentData.fees.length > 0;
+        if (!hasFees) {
+            summaryContainer.innerHTML = '<p style="color:#999;">Взносы не установлены</p>';
+        } else {
+            summaryContainer.innerHTML = '<p style="color:#999;">Нет должников</p>';
+        }
+        container.innerHTML = `
+            <div class="empty-state" style="padding:20px;">
+                <div class="icon">✅</div>
+                <p style="color:#27ae60; font-weight:600;">Все ученики оплатили взносы!</p>
+            </div>
+        `;
+        return;
+    }
+    
+    const totalDebt = debtors.reduce((sum, d) => sum + d.totalDebt, 0);
+    const totalFee = debtors.reduce((sum, d) => sum + d.totalFee, 0);
+    const totalPaid = debtors.reduce((sum, d) => sum + d.totalPaid, 0);
+    
+    summaryContainer.innerHTML = `
+        <div class="debt-item">
+            <div class="amount" style="color:#e74c3c;">${debtors.length}</div>
+            <div class="label">👨‍👩‍👧‍👦 Должников</div>
+        </div>
+        <div class="debt-item">
+            <div class="amount" style="color:#e74c3c;">${totalDebt.toFixed(2)} ₽</div>
+            <div class="label">Общая задолженность</div>
+        </div>
+        <div class="debt-item">
+            <div class="amount">${totalFee.toFixed(2)} ₽</div>
+            <div class="label">Общая сумма взносов</div>
+        </div>
+        <div class="debt-item">
+            <div class="amount" style="color:#27ae60;">${totalPaid.toFixed(2)} ₽</div>
+            <div class="label">Уже внесено</div>
+        </div>
+    `;
+    
+    let html = '';
+    debtors.forEach((d, index) => {
+        let amountClass = 'high';
+        let badgeClass = 'debt-high';
+        let badgeText = '🔴';
+        
+        // Небольшой долг до 1000, средний до 2000
+        if (d.totalDebt < 1000) {
+            amountClass = 'low';
+            badgeClass = 'debt-low';
+            badgeText = '🟢';
+        } else if (d.totalDebt < 2000) {
+            amountClass = 'medium';
+            badgeClass = 'debt-medium';
+            badgeText = '🟡';
+        }
+        
+        const fundDetailsHtml = d.fundDetails.map(fd => 
+            `<span class="fund-tag">${fd.fund}: ${fd.debt.toFixed(2)} ₽</span>`
+        ).join(' ');
+        
+        html += `
+            <div class="debtor-item">
+                <div>
+                    <div class="debtor-name">
+                        ${index + 1}. ${d.childName}
+                        <span class="badge ${badgeClass} debtor-badge">${badgeText}</span>
+                    </div>
+                    <div class="debtor-details">
+                        Обязательно: ${d.totalFee.toFixed(2)} ₽ • Внесено: ${d.totalPaid.toFixed(2)} ₽
+                    </div>
+                    <div style="margin-top:4px;">
+                        ${fundDetailsHtml}
+                    </div>
+                </div>
+                <div class="debtor-amount ${amountClass}">
+                    ${d.totalDebt.toFixed(2)} ₽
+                </div>
+            </div>
+        `;
+    });
+    
+    container.innerHTML = html;
 }
 
 // === ПРИХОДЫ ===
@@ -1870,6 +2129,19 @@ function populateCategoryFilters() {
     select.value = currentValue;
 }
 
+function populateDebtorFundFilters() {
+    const select = document.getElementById('debtorFilterFund');
+    const funds = getFunds();
+    
+    select.innerHTML = '<option value="all">Все фонды</option>';
+    funds.forEach(f => {
+        const opt = document.createElement('option');
+        opt.value = f;
+        opt.textContent = f;
+        select.appendChild(opt);
+    });
+}
+
 // === ОТЧЁТ ===
 function generateReport(from, to, childFilter) {
     const div = document.getElementById('reportResult');
@@ -1989,10 +2261,27 @@ document.addEventListener('DOMContentLoaded', function() {
     
     renderMain();
     
-    if (parentData && selectedChildren.length === 0) {
+    if (!hasData) {
+        setTimeout(async function() {
+            const hasSiteData = await checkDataExists();
+            if (hasSiteData) {
+                try {
+                    const response = await fetch(SITE_DATA_URL + '?t=' + Date.now());
+                    if (response.ok) {
+                        const siteData = await response.json();
+                        if (siteData.children && siteData.transactions) {
+                            showUpdateNotification(siteData);
+                        }
+                    }
+                } catch(e) {
+                    console.error('Ошибка загрузки данных для уведомления:', e);
+                }
+            }
+        }, 1000);
+    } else {
         setTimeout(() => {
-            showChildSelectionModal();
-        }, 500);
+            checkForUpdates(true);
+        }, 3000);
     }
     
     // === ОБРАБОТЧИКИ ===
@@ -2003,14 +2292,6 @@ document.addEventListener('DOMContentLoaded', function() {
     document.getElementById('emptyUpdateBtn').addEventListener('click', function() {
         sessionStorage.removeItem('update_notification_shown');
         updateData();
-    });
-    
-    document.getElementById('checkUpdatesBtn').addEventListener('click', async function() {
-        this.textContent = '⏳ Проверка...';
-        this.disabled = true;
-        await checkForUpdates(false);
-        this.textContent = '🔍 Проверить';
-        this.disabled = false;
     });
     
     document.getElementById('importBtn').addEventListener('click', function() {
@@ -2105,6 +2386,20 @@ document.addEventListener('DOMContentLoaded', function() {
         applyIncomeFilters();
     });
     
+    // === ФИЛЬТРЫ ДОЛЖНИКОВ ===
+    document.getElementById('debtorFilterApply').addEventListener('click', function() {
+        const fund = document.getElementById('debtorFilterFund').value;
+        const minDebt = parseFloat(document.getElementById('debtorFilterMin').value) || 0;
+        renderDebtors(fund, minDebt);
+    });
+    
+    document.getElementById('debtorFilterClear').addEventListener('click', function() {
+        document.getElementById('debtorFilterFund').value = 'all';
+        document.getElementById('debtorFilterMin').value = '';
+        renderDebtors('all', 0);
+    });
+    
+    // === ВКЛАДКИ ===
     document.querySelectorAll('.tab-btn').forEach(btn => {
         btn.addEventListener('click', function() {
             const tabId = this.dataset.tab;
@@ -2124,6 +2419,12 @@ document.addEventListener('DOMContentLoaded', function() {
             }
             if (tabId === 'tabClass') {
                 renderClassTable();
+            }
+            if (tabId === 'tabDebtors') {
+                renderDebtors(
+                    document.getElementById('debtorFilterFund').value,
+                    parseFloat(document.getElementById('debtorFilterMin').value) || 0
+                );
             }
         });
     });
@@ -2243,26 +2544,6 @@ document.addEventListener('DOMContentLoaded', function() {
             generateReport('', '', 'all');
         }, 100);
     }
-    
-    // === АВТОМАТИЧЕСКАЯ ПРОВЕРКА ОБНОВЛЕНИЙ ===
-    if (parentData) {
-        // Проверяем через 3 секунды после загрузки
-        setTimeout(() => {
-            checkForUpdates(true);
-        }, 3000);
-    }
-    
-    // Проверяем при возвращении на страницу (не чаще 5 минут)
-    document.addEventListener('visibilitychange', function() {
-        if (!document.hidden && parentData) {
-            const lastCheck = sessionStorage.getItem('last_update_check') || '0';
-            const now = Date.now();
-            if (now - parseInt(lastCheck) > 300000) {
-                sessionStorage.setItem('last_update_check', now.toString());
-                checkForUpdates(true);
-            }
-        }
-    });
     
     console.log('✅ Инициализация завершена');
 });
