@@ -1,15 +1,12 @@
 {
-  "version": "1.1",
+  "version": "1.2",
   "exportDate": "2026-08-19",
-  "exportTime": "10:03:25",
-  "balance": 35115,
-  "totalIncome": 49500,
+  "exportTime": "20:57:39",
+  "balance": 36115,
+  "totalIncome": 50500,
   "totalExpense": 14385,
   "funds": [
     "Общий сбор",
-    "Театр",
-    "Подарки",
-    "Экскурсия",
     "Канцтовары"
   ],
   "fees": [
@@ -498,7 +495,7 @@
       "fund": null,
       "comment": null,
       "description": "Предоплата за ленты",
-      "category": "Мероприятия",
+      "category": "Общий сбор",
       "files": [
         {
           "name": "Screenshot_2026-08-16-13-39-53-312_com.idamob.tinkoff.android-edit.jpg",
@@ -552,7 +549,7 @@
       "fund": null,
       "comment": null,
       "description": "За бабочки",
-      "category": "Мероприятия",
+      "category": "Общий сбор",
       "files": [
         {
           "name": "Screenshot_2026-08-18-14-28-09-642_com.idamob.tinkoff.android.jpg",
@@ -740,11 +737,35 @@
       "description": null,
       "category": null,
       "files": []
+    },
+    {
+      "id": "1787159697957_ds9ab2",
+      "date": "2026-08-19",
+      "type": "income",
+      "amount": 500,
+      "childName": "Щепачева Полина Витальевна",
+      "fund": "Канцтовары",
+      "comment": null,
+      "description": null,
+      "category": null,
+      "files": []
+    },
+    {
+      "id": "1787159716758_e5whtw",
+      "date": "2026-08-19",
+      "type": "income",
+      "amount": 500,
+      "childName": "Корзан Владислав Витальевич",
+      "fund": "Канцтовары",
+      "comment": null,
+      "description": null,
+      "category": null,
+      "files": []
     }
   ],
   "summary": {
-    "totalIncome": 49500,
+    "totalIncome": 50500,
     "totalExpense": 14385,
-    "balance": 35115
+    "balance": 36115
   }
 }
