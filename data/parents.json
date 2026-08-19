@@ -1,9 +1,9 @@
 {
   "version": "1.1",
-  "exportDate": "2026-08-18",
-  "exportTime": "22:14:36",
-  "balance": 34115,
-  "totalIncome": 48500,
+  "exportDate": "2026-08-19",
+  "exportTime": "08:55:31",
+  "balance": 34615,
+  "totalIncome": 49000,
   "totalExpense": 14385,
   "funds": [
     "Общий сбор",
@@ -716,11 +716,23 @@
       "description": null,
       "category": null,
       "files": []
+    },
+    {
+      "id": "1787118861497_to1h9s",
+      "date": "2026-08-19",
+      "type": "income",
+      "amount": 500,
+      "childName": "Голенков Ярослав Алексеевич",
+      "fund": "Канцтовары",
+      "comment": null,
+      "description": null,
+      "category": null,
+      "files": []
     }
   ],
   "summary": {
-    "totalIncome": 48500,
+    "totalIncome": 49000,
     "totalExpense": 14385,
-    "balance": 34115
+    "balance": 34615
   }
 }
