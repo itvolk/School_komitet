@@ -1,9 +1,9 @@
 {
   "version": "1.1",
   "exportDate": "2026-08-19",
-  "exportTime": "08:55:31",
-  "balance": 34615,
-  "totalIncome": 49000,
+  "exportTime": "10:03:25",
+  "balance": 35115,
+  "totalIncome": 49500,
   "totalExpense": 14385,
   "funds": [
     "Общий сбор",
@@ -728,11 +728,23 @@
       "description": null,
       "category": null,
       "files": []
+    },
+    {
+      "id": "1787122949171_h4copx",
+      "date": "2026-08-19",
+      "type": "income",
+      "amount": 500,
+      "childName": "Пискунов Роман Александрович",
+      "fund": "Канцтовары",
+      "comment": null,
+      "description": null,
+      "category": null,
+      "files": []
     }
   ],
   "summary": {
-    "totalIncome": 49000,
+    "totalIncome": 49500,
     "totalExpense": 14385,
-    "balance": 34615
+    "balance": 35115
   }
 }
