@@ -75,6 +75,8 @@
         .btn-contact:hover { background: #8e44ad; }
         .btn-update { background: #f39c12; color: #fff; }
         .btn-update:hover { background: #e67e22; }
+        .btn-debtors { background: #e74c3c; color: #fff; }
+        .btn-debtors:hover { background: #c0392b; }
         .hidden { display: none; }
         
         .tabs { 
@@ -353,44 +355,32 @@
             padding: 4px 0;
         }
 
-        /* Уведомление об обновлении */
-        .update-notification {
-            position: fixed;
-            bottom: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            z-index: 9999;
-            background: #2c3e50;
-            color: #fff;
-            padding: 16px 24px;
-            border-radius: 12px;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.3);
-            max-width: 90%;
-            width: 400px;
-            text-align: center;
-            animation: slideUp 0.3s ease-out;
-            font-family: -apple-system, 'Segoe UI', Roboto, sans-serif;
+        .report-fund-summary {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 12px;
+            margin: 12px 0;
         }
-        .update-notification.hidden {
-            display: none;
+        .report-fund-summary .fund-card {
+            background: #fff;
+            padding: 12px 16px;
+            border-radius: 8px;
+            border: 1px solid #e9ecf0;
         }
-        @keyframes slideUp {
-            from { opacity: 0; transform: translateX(-50%) translateY(20px); }
-            to { opacity: 1; transform: translateX(-50%) translateY(0); }
-        }
-
-        /* Стили для должников */
-        .debtor-list-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            flex-wrap: wrap;
-            margin-bottom: 12px;
-            gap: 8px;
-        }
-        .debtor-list-header .debtor-count {
+        .report-fund-summary .fund-card .fund-name {
+            font-weight: 600;
             font-size: 14px;
+            color: #2c3e50;
+        }
+        .report-fund-summary .fund-card .fund-total {
+            font-size: 18px;
+            font-weight: 700;
+            margin-top: 4px;
+        }
+        .report-fund-summary .fund-card .fund-detail {
+            font-size: 12px;
             color: #888;
+            margin-top: 2px;
         }
 
         @media (max-width: 768px) {
@@ -450,12 +440,6 @@
             .child-selector { flex-direction: column; }
             .child-selector .list-container { min-width: unset; }
             
-            .update-notification { 
-                bottom: 10px; 
-                padding: 12px 16px;
-                width: 95%;
-            }
-            
             .debtor-item {
                 flex-direction: column;
                 align-items: flex-start;
@@ -464,6 +448,7 @@
             .debtor-item .debtor-amount {
                 align-self: flex-start;
             }
+            .report-fund-summary { grid-template-columns: 1fr 1fr; }
         }
 
         @media (max-width: 480px) {
@@ -483,6 +468,8 @@
             .debt-summary { grid-template-columns: 1fr; }
             
             .modal-content { margin: 8px; padding: 16px; }
+            
+            .report-fund-summary { grid-template-columns: 1fr; }
         }
 
         @media (max-width: 360px) {
@@ -502,6 +489,7 @@
             <h1 style="font-size:20px; margin:0;">📊 Фонд родительского кометета 1"Е" класса 2026 г.</h1>
             <div class="header-actions">
                 <button class="btn btn-contact btn-sm" id="contactBtn">💬 Связь с автором</button>
+                <button class="btn btn-debtors btn-sm" id="debtorsBtn">🔴 Должники</button>
                 <button class="btn btn-update btn-sm" id="updateFromSiteBtn">🔄 Обновить с сайта</button>
                 <button class="btn btn-success btn-sm" id="importBtn">📤 Импорт файла</button>
                 <input type="file" id="importFile" accept=".json" style="display:none;">
@@ -653,16 +641,12 @@
                         <label>По</label>
                         <input type="date" id="reportTo">
                     </div>
-                    <div class="form-group">
-                        <label>Ученик</label>
-                        <select id="reportFilterChild">
-                            <option value="all">Все</option>
-                        </select>
-                    </div>
                     <button class="btn" id="reportGenerate">📊 Сформировать</button>
                     <button class="btn btn-outline" id="reportClear">🗑️ Очистить</button>
                 </div>
 
+                <div id="reportSummary" style="margin-top:12px;"></div>
+                <div id="reportFundsSummary" style="margin-top:12px;"></div>
                 <div id="reportResult" style="margin-top:12px;"></div>
             </div>
         </div>
@@ -805,110 +789,7 @@
 <script>
 console.log('✅ Страница для родителей загружена');
 
-// === АВТОМАТИЧЕСКАЯ ПРОВЕРКА ОБНОВЛЕНИЙ SERVICE WORKER ===
-function checkForServiceWorkerUpdate() {
-    if ('serviceWorker' in navigator) {
-        navigator.serviceWorker.ready.then(function(registration) {
-            // Проверяем обновления при загрузке
-            registration.update();
-            
-            // Проверяем каждые 5 минут
-            setInterval(function() {
-                registration.update();
-            }, 300000);
-        });
-        
-        // Слушаем сообщения от Service Worker
-        navigator.serviceWorker.addEventListener('message', function(event) {
-            if (event.data === 'updateAvailable') {
-                console.log('🔄 Доступна новая версия!');
-                // Показываем уведомление
-                showUpdateNotification();
-            }
-        });
-    }
-}
-
-function showUpdateNotification() {
-    // Проверяем, не показывали ли уже
-    if (document.querySelector('.update-banner')) return;
-    
-    const banner = document.createElement('div');
-    banner.className = 'update-banner';
-    banner.style.cssText = `
-        position: fixed;
-        bottom: 20px;
-        left: 50%;
-        transform: translateX(-50%);
-        z-index: 9999;
-        background: #2c3e50;
-        color: #fff;
-        padding: 16px 24px;
-        border-radius: 12px;
-        box-shadow: 0 4px 20px rgba(0,0,0,0.3);
-        max-width: 90%;
-        width: 400px;
-        text-align: center;
-        font-family: -apple-system, 'Segoe UI', Roboto, sans-serif;
-        animation: slideUp 0.3s ease-out;
-    `;
-    
-    banner.innerHTML = `
-        <div style="display:flex; align-items:center; gap:12px; margin-bottom:8px;">
-            <span style="font-size:24px;">🔄</span>
-            <div style="flex:1; text-align:left;">
-                <div style="font-weight:600; font-size:15px;">Доступна новая версия</div>
-                <div style="font-size:12px; color:#b0bec5; margin-top:4px;">Обновите страницу для загрузки</div>
-            </div>
-        </div>
-        <div style="display:flex; gap:8px; margin-top:8px;">
-            <button onclick="location.reload(true);" 
-                    style="flex:1; background:#2ecc71; color:#fff; border:none; padding:8px 16px; border-radius:6px; font-weight:600; cursor:pointer; font-size:14px;">
-                ✅ Обновить сейчас
-            </button>
-            <button onclick="this.parentElement.parentElement.remove();" 
-                    style="flex:1; background:#555; color:#fff; border:none; padding:8px 16px; border-radius:6px; cursor:pointer; font-size:14px;">
-                ⏰ Позже
-            </button>
-        </div>
-    `;
-    
-    document.body.appendChild(banner);
-    
-    // Стиль анимации
-    if (!document.querySelector('#updateBannerStyle')) {
-        const style = document.createElement('style');
-        style.id = 'updateBannerStyle';
-        style.textContent = `
-            @keyframes slideUp {
-                from { opacity: 0; transform: translateX(-50%) translateY(20px); }
-                to { opacity: 1; transform: translateX(-50%) translateY(0); }
-            }
-        `;
-        document.head.appendChild(style);
-    }
-}
-
-// === ОБНОВЛЕНИЕ SERVICE WORKER ПРИ ЗАГРУЗКЕ ===
-if ('serviceWorker' in navigator) {
-    // Проверяем обновления каждые 5 минут
-    setInterval(function() {
-        navigator.serviceWorker.ready.then(function(registration) {
-            registration.update();
-        });
-    }, 300000); // 5 минут
-    
-    // Проверяем при возвращении на страницу (visibility change)
-    document.addEventListener('visibilitychange', function() {
-        if (!document.hidden) {
-            navigator.serviceWorker.ready.then(function(registration) {
-                registration.update();
-            });
-        }
-    });
-}
-
-// === ФУНКЦИЯ ДЛЯ ФОРМАТИРОВАНИЯ СУММ (убираем копейки если они .00) ===
+// === ФУНКЦИЯ ДЛЯ ФОРМАТИРОВАНИЯ СУММ ===
 function formatAmount(amount) {
     const rounded = Math.round(amount * 100) / 100;
     if (Number.isInteger(rounded)) {
@@ -931,6 +812,12 @@ function pluralize(count, one, few, many) {
 
 function getChildrenLabel(count) {
     return pluralize(count, 'ученик', 'ученика', 'учеников');
+}
+
+// === ФУНКЦИЯ ДЛЯ ПОИСКА РЕБЁНКА ===
+function findChild(id) {
+    const children = getChildren();
+    return children.find(c => c.id === id);
 }
 
 // === РЕГИСТРАЦИЯ SERVICE WORKER ===
@@ -1473,6 +1360,10 @@ function getFunds() {
     return parentData && parentData.funds ? parentData.funds : [];
 }
 
+function getFees() {
+    return parentData && parentData.fees ? parentData.fees : [];
+}
+
 function getChildName(id) {
     const children = getChildren();
     const child = children.find(c => c.id === id);
@@ -1676,6 +1567,245 @@ function calculateDebtors(fundFilter, minDebt) {
     return debtors;
 }
 
+// === ГЕНЕРАЦИЯ ОТЧЁТА ===
+function generateReport(from, to) {
+    try {
+        const div = document.getElementById('reportResult');
+        const summaryDiv = document.getElementById('reportSummary');
+        const fundsDiv = document.getElementById('reportFundsSummary');
+        
+        let list = getTransactions();
+        
+        if (from) list = list.filter(t => t.date >= from);
+        if (to) list = list.filter(t => t.date <= to);
+        
+        if (list.length === 0) {
+            summaryDiv.innerHTML = '<p style="color:#999;">Нет операций за выбранный период</p>';
+            fundsDiv.innerHTML = '';
+            div.innerHTML = '';
+            return;
+        }
+        
+        // === ОБЩАЯ СТАТИСТИКА ===
+        let income = 0, expense = 0;
+        list.forEach(t => { 
+            if (t.type === 'income') income += t.amount; 
+            else expense += t.amount; 
+        });
+        const balance = income - expense;
+        
+        let periodLabel = '';
+        if (from && to) {
+            periodLabel = `${formatDate(from)} — ${formatDate(to)}`;
+        } else if (from) {
+            periodLabel = `с ${formatDate(from)}`;
+        } else if (to) {
+            periodLabel = `по ${formatDate(to)}`;
+        } else {
+            periodLabel = 'За всё время';
+        }
+        
+        summaryDiv.innerHTML = `
+            <div style="background:#f1f4f9;padding:12px;border-radius:8px;margin-bottom:12px;">
+                <div style="display:flex; flex-wrap:wrap; gap:12px; font-size:13px;">
+                    <div><strong>📅 Период:</strong> ${periodLabel}</div>
+                    <div><strong>📈 Приходов:</strong> <span style="color:#27ae60;font-weight:700;">${formatAmountWithCurrency(income)}</span></div>
+                    <div><strong>📉 Расходов:</strong> <span style="color:#e74c3c;font-weight:700;">${formatAmountWithCurrency(expense)}</span></div>
+                    <div><strong>💰 Баланс:</strong> <span style="font-weight:700;color:${balance>=0?'#27ae60':'#e74c3c'};">${formatAmountWithCurrency(balance)}</span></div>
+                    <div><strong>📊 Всего:</strong> ${list.length}</div>
+                </div>
+            </div>
+        `;
+        
+        // === СТАТИСТИКА ПО ФОНДАМ ===
+        const funds = getFunds();
+        const children = getChildren();
+        const allTransactions = getTransactions();
+        const fundStats = [];
+        
+        funds.forEach(fund => {
+            // Приходы по фонду за период
+            const fundIncomes = list.filter(t => t.type === 'income' && t.fund === fund);
+            const fundIncomeSum = fundIncomes.reduce((sum, t) => sum + t.amount, 0);
+            
+            // Расходы по фонду за период
+            const fundExpenses = list.filter(t => t.type === 'expense' && t.category === fund);
+            const fundExpenseSum = fundExpenses.reduce((sum, t) => sum + t.amount, 0);
+            
+            // Все приходы по фонду (за всё время)
+            const allFundIncomes = allTransactions.filter(t => t.type === 'income' && t.fund === fund);
+            const allFundIncomeSum = allFundIncomes.reduce((sum, t) => sum + t.amount, 0);
+            
+            // Все расходы по фонду (за всё время)
+            const allFundExpenses = allTransactions.filter(t => t.type === 'expense' && t.category === fund);
+            const allFundExpenseSum = allFundExpenses.reduce((sum, t) => sum + t.amount, 0);
+            
+            // Текущий остаток по фонду
+            const currentBalance = allFundIncomeSum - allFundExpenseSum;
+            
+            // Взносы по фонду
+            const feeData = getFees().filter(f => f.fund === fund);
+            const totalStudents = children.length;
+            const perPersonAmount = feeData.reduce((sum, f) => sum + f.amount, 0);
+            const totalPlanned = perPersonAmount * totalStudents;
+            const totalPaid = allTransactions.filter(t => t.type === 'income' && t.fund === fund).reduce((sum, t) => sum + t.amount, 0);
+            const totalDebt = totalPlanned - totalPaid;
+            
+            // Количество должников
+            let debtorsCount = 0;
+            children.forEach(child => {
+                const childPaid = allTransactions.filter(t => t.type === 'income' && t.childId === child.id && t.fund === fund).reduce((sum, t) => sum + t.amount, 0);
+                let childPlanned = 0;
+                feeData.forEach(f => childPlanned += f.amount);
+                if (childPlanned > childPaid) debtorsCount++;
+            });
+            
+            if (totalPlanned > 0 || totalPaid > 0 || currentBalance !== 0 || fundIncomeSum > 0 || fundExpenseSum > 0) {
+                fundStats.push({
+                    name: fund,
+                    planned: totalPlanned,
+                    perPerson: feeData.length > 0 ? feeData.reduce((s,f) => s + f.amount, 0).toFixed(2) + ' ₽' : '—',
+                    period: feeData.length > 0 ? feeData.map(f => f.period).join(', ') : '—',
+                    income: fundIncomeSum,
+                    expense: fundExpenseSum,
+                    balance: currentBalance,
+                    paid: totalPaid,
+                    debt: totalDebt,
+                    debtorsCount: debtorsCount,
+                    feeCount: feeData.length,
+                    feeDetails: feeData,
+                    totalStudents: totalStudents
+                });
+            }
+        });
+        
+        if (fundStats.length > 0) {
+            let fundsHtml = `
+                <div style="margin-top:12px; margin-bottom:12px;">
+                    <h4 style="font-size:14px; margin-bottom:8px;">📊 Статистика по фондам</h4>
+                    <div class="report-fund-summary">
+            `;
+            
+            fundStats.forEach(f => {
+                const balanceColor = f.balance >= 0 ? '#27ae60' : '#e74c3c';
+                const debtColor = f.debt > 0 ? '#e74c3c' : '#27ae60';
+                
+                let feeDetailsHtml = '';
+                if (f.feeDetails.length > 0) {
+                    const grouped = {};
+                    f.feeDetails.forEach(fee => {
+                        if (!grouped[fee.period]) grouped[fee.period] = [];
+                        grouped[fee.period].push(fee);
+                    });
+                    const periodLabels2 = {
+                        'monthly': 'ежемесячно',
+                        'quarterly': 'ежеквартально',
+                        'halfyear': 'за полугодие',
+                        'yearly': 'ежегодно',
+                        'once': 'разово'
+                    };
+                    feeDetailsHtml = Object.keys(grouped).map(period => {
+                        const amounts = grouped[period].map(f => f.amount);
+                        let amountStr = amounts.length === 1 ? amounts[0].toFixed(2) + ' ₽' : amounts.map(a => a.toFixed(2) + ' ₽').join(' + ');
+                        return `<span style="font-size:11px; color:#888; margin-right:8px;">${periodLabels2[period] || period}: ${amountStr}</span>`;
+                    }).join('');
+                }
+                
+                fundsHtml += `
+                    <div class="fund-card" style="padding:16px; background:#fff; border-radius:8px; border:1px solid #e9ecf0;">
+                        <div class="fund-name" style="font-weight:700; font-size:16px; color:#2c3e50; margin-bottom:6px;">
+                            ${f.name}
+                            ${f.feeCount > 0 ? `<span class="badge fund" style="margin-left:8px; font-size:10px;">${f.feeCount} взн.</span>` : ''}
+                            ${f.debtorsCount > 0 ? `<span class="badge debt" style="margin-left:8px; font-size:10px;">${f.debtorsCount} долж.</span>` : ''}
+                        </div>
+                        <div style="font-size:12px; color:#888; margin-bottom:6px;">
+                            ${f.period && f.period !== '—' ? `Периодичность: ${f.period}` : ''}
+                            ${f.perPerson && f.perPerson !== '—' ? ` • На человека: ${f.perPerson}` : ''}
+                            ${f.totalStudents ? ` • Учеников: ${f.totalStudents}` : ''}
+                        </div>
+                        ${feeDetailsHtml ? `<div style="font-size:11px; color:#888; margin-bottom:6px;">${feeDetailsHtml}</div>` : ''}
+                        <div style="display:grid; grid-template-columns:1fr 1fr; gap:4px 16px; font-size:13px; background:#f8f9fc; padding:8px 12px; border-radius:6px;">
+                            <div style="color:#555;">📋 Плановый сбор (класс):</div>
+                            <div style="font-weight:600; text-align:right;">${formatAmountWithCurrency(f.planned)}</div>
+                            
+                            <div style="color:#555;">📈 Собрано (приходы):</div>
+                            <div style="font-weight:600; color:#27ae60; text-align:right;">${formatAmountWithCurrency(f.paid)}</div>
+                            
+                            <div style="color:#555;">📉 Расходы:</div>
+                            <div style="font-weight:600; color:#e74c3c; text-align:right;">${formatAmountWithCurrency(f.expense)}</div>
+                            
+                            <div style="color:#555; border-top:1px solid #e0e0e0; padding-top:4px;">💰 Остаток:</div>
+                            <div style="font-weight:700; color:${balanceColor}; border-top:1px solid #e0e0e0; padding-top:4px; text-align:right;">${formatAmountWithCurrency(f.balance)}</div>
+                            
+                            <div style="color:#555;">📌 Задолженность:</div>
+                            <div style="font-weight:700; color:${debtColor}; text-align:right;">${formatAmountWithCurrency(f.debt)}</div>
+                        </div>
+                        <div style="margin-top:6px; font-size:11px; color:#999; border-top:1px solid #f0f0f0; padding-top:6px;">
+                            За период: приход ${formatAmountWithCurrency(f.income)}, расход ${formatAmountWithCurrency(f.expense)}
+                        </div>
+                    </div>
+                `;
+            });
+            
+            fundsHtml += `
+                    </div>
+                </div>
+            `;
+            fundsDiv.innerHTML = fundsHtml;
+        } else {
+            fundsDiv.innerHTML = '<p style="color:#999; font-size:13px;">Нет данных по фондам</p>';
+        }
+        
+        // === ДЕТАЛЬНЫЙ ОТЧЁТ ПО ОПЕРАЦИЯМ ===
+        let html = `
+            <div style="margin-top:12px;">
+                <h4 style="font-size:14px; margin-bottom:8px;">📋 Детальный отчёт</h4>
+                <div class="table-wrapper">
+                    <table>
+                        <thead><tr><th>Дата</th><th>Тип</th><th>Фонд</th><th>Сумма</th><th>Описание</th><th>Чек</th></tr></thead>
+                        <tbody>`;
+        
+        const sorted = list.slice().sort((a,b) => a.date.localeCompare(b.date));
+        sorted.forEach(t => {
+            const typeLabel = t.type === 'income' ? 'Приход' : 'Расход';
+            const badge = t.type === 'income' ? 'income' : 'expense';
+            let desc = '';
+            let fileHtml = '—';
+            let fundName = '';
+            
+            if (t.type === 'income') {
+                const child = findChild(t.childId);
+                const childName = child ? child.name : 'неизвестный ученик';
+                desc = `${childName} — от: ${t.parentName || 'не указан'}` + (t.comment ? ' ('+t.comment+')' : '');
+                fundName = t.fund || 'Общий сбор';
+                fileHtml = '—';
+            } else {
+                desc = (t.description || '') + ' (' + (t.category || 'без категории') + ')';
+                fundName = t.category || 'без категории';
+                if (t.files && t.files.length > 0) {
+                    const idStr = t.id.toString();
+                    fileHtml = `<span style="cursor:pointer;color:#4f8cf7;text-decoration:underline;" onclick="showFilePreview('${idStr}')">📎 ${t.files.length}</span>`;
+                }
+            }
+            
+            html += `<tr>
+                <td>${formatDate(t.date)}</td>
+                <td><span class="badge ${badge}">${typeLabel}</span></td>
+                <td><span class="fund-tag">${fundName}</span></td>
+                <td>${formatAmountWithCurrency(t.amount)}</td>
+                <td>${desc}</td>
+                <td>${fileHtml}</td>
+            </tr>`;
+        });
+        html += '</tbody></table></div></div>';
+        div.innerHTML = html;
+        
+    } catch(err) {
+        console.error('❌ Ошибка генерации отчёта:', err);
+        alert('Ошибка: ' + err.message);
+    }
+}
+
 // === РЕНДЕРИНГ ===
 function renderMain() {
     const hasData = parentData && parentData.children && parentData.children.length > 0;
@@ -1683,17 +1813,27 @@ function renderMain() {
     renderDataInfo();
     
     if (!hasData) {
-        document.getElementById('emptyState').classList.remove('hidden');
-        document.getElementById('selectedInfo').classList.add('hidden');
-        document.getElementById('mainContent').classList.add('hidden');
-        document.getElementById('tabsContainer').classList.add('hidden');
+        const emptyState = document.getElementById('emptyState');
+        const selectedInfo = document.getElementById('selectedInfo');
+        const mainContent = document.getElementById('mainContent');
+        const tabsContainer = document.getElementById('tabsContainer');
+        
+        if (emptyState) emptyState.classList.remove('hidden');
+        if (selectedInfo) selectedInfo.classList.add('hidden');
+        if (mainContent) mainContent.classList.add('hidden');
+        if (tabsContainer) tabsContainer.classList.add('hidden');
         return;
     }
     
-    document.getElementById('emptyState').classList.add('hidden');
-    document.getElementById('selectedInfo').classList.remove('hidden');
-    document.getElementById('mainContent').classList.remove('hidden');
-    document.getElementById('tabsContainer').classList.remove('hidden');
+    const emptyState = document.getElementById('emptyState');
+    const selectedInfo = document.getElementById('selectedInfo');
+    const mainContent = document.getElementById('mainContent');
+    const tabsContainer = document.getElementById('tabsContainer');
+    
+    if (emptyState) emptyState.classList.add('hidden');
+    if (selectedInfo) selectedInfo.classList.remove('hidden');
+    if (mainContent) mainContent.classList.remove('hidden');
+    if (tabsContainer) tabsContainer.classList.remove('hidden');
     
     renderSelectedChildren();
     renderBalance();
@@ -1717,6 +1857,11 @@ function renderMain() {
         filterChildren = [];
     }
     updateFilterChildTags();
+    
+    // Автоматически генерируем отчёт за всё время
+    setTimeout(() => {
+        generateReport('', '');
+    }, 300);
 }
 
 // === ИНФОРМАЦИЯ О ДАННЫХ ===
@@ -2201,141 +2346,69 @@ function populateChildFilters() {
     const reportSelect = document.getElementById('reportFilterChild');
     const children = getChildren();
     
-    reportSelect.innerHTML = '<option value="all">Все</option>';
-    children.forEach(c => {
-        const opt = document.createElement('option');
-        opt.value = c.name;
-        opt.textContent = c.name;
-        reportSelect.appendChild(opt);
-    });
+    if (reportSelect) {
+        reportSelect.innerHTML = '<option value="all">Все</option>';
+        children.forEach(c => {
+            const opt = document.createElement('option');
+            opt.value = c.name;
+            opt.textContent = c.name;
+            reportSelect.appendChild(opt);
+        });
+    }
 }
 
 function populateFundFilters() {
     const select = document.getElementById('incomeFilterFund');
     const funds = getFunds();
     
-    const currentValue = select.value;
-    select.innerHTML = '<option value="all">Все</option>';
-    funds.forEach(f => {
-        const opt = document.createElement('option');
-        opt.value = f;
-        opt.textContent = f;
-        select.appendChild(opt);
-    });
-    select.value = currentValue;
+    if (select) {
+        const currentValue = select.value;
+        select.innerHTML = '<option value="all">Все</option>';
+        funds.forEach(f => {
+            const opt = document.createElement('option');
+            opt.value = f;
+            opt.textContent = f;
+            select.appendChild(opt);
+        });
+        select.value = currentValue;
+    }
 }
 
 function populateCategoryFilters() {
     const select = document.getElementById('expenseFilterCategory');
     const transactions = getTransactions();
-    const categories = new Set();
-    transactions.filter(t => t.type === 'expense').forEach(t => {
-        if (t.category) categories.add(t.category);
-    });
     
-    const currentValue = select.value;
-    select.innerHTML = '<option value="all">Все</option>';
-    categories.forEach(c => {
-        const opt = document.createElement('option');
-        opt.value = c;
-        opt.textContent = c;
-        select.appendChild(opt);
-    });
-    select.value = currentValue;
+    if (select) {
+        const categories = new Set();
+        transactions.filter(t => t.type === 'expense').forEach(t => {
+            if (t.category) categories.add(t.category);
+        });
+        
+        const currentValue = select.value;
+        select.innerHTML = '<option value="all">Все</option>';
+        categories.forEach(c => {
+            const opt = document.createElement('option');
+            opt.value = c;
+            opt.textContent = c;
+            select.appendChild(opt);
+        });
+        select.value = currentValue;
+    }
 }
 
 function populateDebtorFundFilters() {
     const select = document.getElementById('debtorFilterFund');
     const funds = getFunds();
     
-    select.innerHTML = '<option value="all">Все фонды</option>';
-    funds.forEach(f => {
-        const opt = document.createElement('option');
-        opt.value = f;
-        opt.textContent = f;
-        select.appendChild(opt);
-    });
-}
-
-// === ОТЧЁТ ===
-function generateReport(from, to, childFilter) {
-    const div = document.getElementById('reportResult');
-    let transactions = getTransactions();
-    
-    if (from) transactions = transactions.filter(t => t.date >= from);
-    if (to) transactions = transactions.filter(t => t.date <= to);
-    if (childFilter && childFilter !== 'all') {
-        transactions = transactions.filter(t => t.type === 'income' ? t.childName === childFilter : true);
+    if (select) {
+        select.innerHTML = '<option value="all">Все фонды</option>';
+        funds.forEach(f => {
+            const opt = document.createElement('option');
+            opt.value = f;
+            opt.textContent = f;
+            select.appendChild(opt);
+        });
     }
-    
-    if (transactions.length === 0) {
-        div.innerHTML = '<p style="color:#999;">Нет операций за выбранный период</p>';
-        return;
-    }
-    
-    let income = 0, expense = 0;
-    transactions.forEach(t => {
-        if (t.type === 'income') income += t.amount;
-        else expense += t.amount;
-    });
-    const balance = income - expense;
-    
-    let periodLabel = '';
-    if (from && to) {
-        periodLabel = `${formatDate(from)} — ${formatDate(to)}`;
-    } else if (from) {
-        periodLabel = `с ${formatDate(from)}`;
-    } else if (to) {
-        periodLabel = `по ${formatDate(to)}`;
-    } else {
-        periodLabel = 'За всё время';
-    }
-    
-    let html = `
-        <div style="background:#f1f4f9;padding:12px;border-radius:8px;margin-bottom:12px;">
-            <div style="display:flex; flex-wrap:wrap; gap:12px; font-size:13px;">
-                <div><strong>📅 Период:</strong> ${periodLabel}</div>
-                <div><strong>📈 Приходов:</strong> <span style="color:#27ae60;font-weight:700;">${formatAmountWithCurrency(income)}</span></div>
-                <div><strong>📉 Расходов:</strong> <span style="color:#e74c3c;font-weight:700;">${formatAmountWithCurrency(expense)}</span></div>
-                <div><strong>💰 Баланс:</strong> <span style="font-weight:700;color:${balance>=0?'#27ae60':'#e74c3c'};">${formatAmountWithCurrency(balance)}</span></div>
-                <div><strong>📊 Всего:</strong> ${transactions.length}</div>
-            </div>
-        </div>
-        <div class="table-wrapper">
-            <table>
-                <thead><tr><th>Дата</th><th>Тип</th><th>Сумма</th><th>Описание</th></tr></thead>
-                <tbody>`;
-    
-    const sorted = transactions.slice().sort((a,b) => a.date.localeCompare(b.date));
-    sorted.forEach(t => {
-        const typeLabel = t.type === 'income' ? 'Приход' : 'Расход';
-        let desc = '';
-        if (t.type === 'income') {
-            desc = `${t.childName || 'неизвестный'}${t.comment ? ' ('+t.comment+')' : ''}`;
-            if (t.fund) desc += ` [${t.fund}]`;
-        } else {
-            desc = (t.description || '') + ' (' + (t.category || 'без категории') + ')';
-        }
-        html += `<tr>
-            <td>${formatDate(t.date)}</td>
-            <td><span class="badge ${t.type === 'income' ? 'income' : 'expense'}">${typeLabel}</span></td>
-            <td>${formatAmountWithCurrency(t.amount)}</td>
-            <td>${desc}</td>
-        </tr>`;
-    });
-    html += '</tbody></table></div>';
-    div.innerHTML = html;
-}
-
-// === МОДАЛЬНЫЕ ОКНА ===
-function showChildSelectionModal() {
-    const modal = document.getElementById('childSelectModal');
-    renderModalChildren();
-    modal.style.display = 'flex';
-}
-
-function closeChildSelectionModal() {
-    document.getElementById('childSelectModal').style.display = 'none';
 }
 
 // === СВЯЗЬ С АВТОРОМ ===
@@ -2351,6 +2424,18 @@ window.addEventListener('click', function(e) {
         contactModal.style.display = 'none';
     }
 });
+
+// === МОДАЛЬНЫЕ ОКНА ===
+function showChildSelectionModal() {
+    const modal = document.getElementById('childSelectModal');
+    renderModalChildren();
+    modal.style.display = 'flex';
+}
+
+function closeChildSelectionModal() {
+    const modal = document.getElementById('childSelectModal');
+    if (modal) modal.style.display = 'none';
+}
 
 // === ОЧИСТКА ===
 function clearData() {
@@ -2376,27 +2461,10 @@ document.addEventListener('DOMContentLoaded', function() {
     
     renderMain();
     
-    if (!hasData) {
-        setTimeout(async function() {
-            const hasSiteData = await checkDataExists();
-            if (hasSiteData) {
-                try {
-                    const response = await fetch(SITE_DATA_URL + '?t=' + Date.now());
-                    if (response.ok) {
-                        const siteData = await response.json();
-                        if (siteData.children && siteData.transactions) {
-                            showUpdateNotification(siteData);
-                        }
-                    }
-                } catch(e) {
-                    console.error('Ошибка загрузки данных для уведомления:', e);
-                }
-            }
-        }, 1000);
-    } else {
+    if (parentData && selectedChildren.length === 0) {
         setTimeout(() => {
-            checkForUpdates(true);
-        }, 3000);
+            showChildSelectionModal();
+        }, 500);
     }
     
     // === ОБРАБОТЧИКИ ===
@@ -2407,6 +2475,21 @@ document.addEventListener('DOMContentLoaded', function() {
     document.getElementById('emptyUpdateBtn').addEventListener('click', function() {
         sessionStorage.removeItem('update_notification_shown');
         updateData();
+    });
+    
+    document.getElementById('debtorsBtn').addEventListener('click', function() {
+        const tabDebtors = document.querySelector('[data-tab="tabDebtors"]');
+        const contentDebtors = document.getElementById('tabDebtors');
+        if (tabDebtors && contentDebtors) {
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+            tabDebtors.classList.add('active');
+            contentDebtors.classList.add('active');
+            renderDebtors(
+                document.getElementById('debtorFilterFund')?.value || 'all',
+                parseFloat(document.getElementById('debtorFilterMin')?.value) || 0
+            );
+        }
     });
     
     document.getElementById('importBtn').addEventListener('click', function() {
@@ -2503,14 +2586,16 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // === ФИЛЬТРЫ ДОЛЖНИКОВ ===
     document.getElementById('debtorFilterApply').addEventListener('click', function() {
-        const fund = document.getElementById('debtorFilterFund').value;
-        const minDebt = parseFloat(document.getElementById('debtorFilterMin').value) || 0;
+        const fund = document.getElementById('debtorFilterFund')?.value || 'all';
+        const minDebt = parseFloat(document.getElementById('debtorFilterMin')?.value) || 0;
         renderDebtors(fund, minDebt);
     });
     
     document.getElementById('debtorFilterClear').addEventListener('click', function() {
-        document.getElementById('debtorFilterFund').value = 'all';
-        document.getElementById('debtorFilterMin').value = '';
+        const fundSelect = document.getElementById('debtorFilterFund');
+        const minInput = document.getElementById('debtorFilterMin');
+        if (fundSelect) fundSelect.value = 'all';
+        if (minInput) minInput.value = '';
         renderDebtors('all', 0);
     });
     
@@ -2521,7 +2606,8 @@ document.addEventListener('DOMContentLoaded', function() {
             document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
             document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
             this.classList.add('active');
-            document.getElementById(tabId).classList.add('active');
+            const content = document.getElementById(tabId);
+            if (content) content.classList.add('active');
             
             if (tabId === 'tabIncomes') {
                 applyIncomeFilters();
@@ -2537,8 +2623,14 @@ document.addEventListener('DOMContentLoaded', function() {
             }
             if (tabId === 'tabDebtors') {
                 renderDebtors(
-                    document.getElementById('debtorFilterFund').value,
-                    parseFloat(document.getElementById('debtorFilterMin').value) || 0
+                    document.getElementById('debtorFilterFund')?.value || 'all',
+                    parseFloat(document.getElementById('debtorFilterMin')?.value) || 0
+                );
+            }
+            if (tabId === 'tabReport') {
+                generateReport(
+                    document.getElementById('reportFrom')?.value || '',
+                    document.getElementById('reportTo')?.value || ''
                 );
             }
         });
@@ -2547,18 +2639,21 @@ document.addEventListener('DOMContentLoaded', function() {
     // === ФИЛЬТРЫ ПЛАТЕЖЕЙ ===
     document.getElementById('incomeFilterApply').addEventListener('click', applyIncomeFilters);
     document.getElementById('incomeFilterClear').addEventListener('click', function() {
-        document.getElementById('incomeFilterFrom').value = '';
-        document.getElementById('incomeFilterTo').value = '';
+        const fromInput = document.getElementById('incomeFilterFrom');
+        const toInput = document.getElementById('incomeFilterTo');
+        const fundSelect = document.getElementById('incomeFilterFund');
+        if (fromInput) fromInput.value = '';
+        if (toInput) toInput.value = '';
         filterChildren = [];
         updateFilterChildTags();
-        document.getElementById('incomeFilterFund').value = 'all';
+        if (fundSelect) fundSelect.value = 'all';
         applyIncomeFilters();
     });
     
     function applyIncomeFilters() {
-        const from = document.getElementById('incomeFilterFrom').value;
-        const to = document.getElementById('incomeFilterTo').value;
-        const fund = document.getElementById('incomeFilterFund').value;
+        const from = document.getElementById('incomeFilterFrom')?.value || '';
+        const to = document.getElementById('incomeFilterTo')?.value || '';
+        const fund = document.getElementById('incomeFilterFund')?.value || 'all';
         renderIncomesTable(from, to, filterChildren, fund);
     }
     
@@ -2569,16 +2664,19 @@ document.addEventListener('DOMContentLoaded', function() {
     // === ФИЛЬТРЫ РАСХОДОВ ===
     document.getElementById('expenseFilterApply').addEventListener('click', applyExpenseFilters);
     document.getElementById('expenseFilterClear').addEventListener('click', function() {
-        document.getElementById('expenseFilterFrom').value = '';
-        document.getElementById('expenseFilterTo').value = '';
-        document.getElementById('expenseFilterCategory').value = 'all';
+        const fromInput = document.getElementById('expenseFilterFrom');
+        const toInput = document.getElementById('expenseFilterTo');
+        const categorySelect = document.getElementById('expenseFilterCategory');
+        if (fromInput) fromInput.value = '';
+        if (toInput) toInput.value = '';
+        if (categorySelect) categorySelect.value = 'all';
         applyExpenseFilters();
     });
     
     function applyExpenseFilters() {
-        const from = document.getElementById('expenseFilterFrom').value;
-        const to = document.getElementById('expenseFilterTo').value;
-        const category = document.getElementById('expenseFilterCategory').value;
+        const from = document.getElementById('expenseFilterFrom')?.value || '';
+        const to = document.getElementById('expenseFilterTo')?.value || '';
+        const category = document.getElementById('expenseFilterCategory')?.value || 'all';
         renderExpensesTable(from, to, category);
     }
     
@@ -2624,40 +2722,50 @@ document.addEventListener('DOMContentLoaded', function() {
             const period = this.dataset.period;
             const dates = getPeriodDates(period);
             
+            const fromInput = document.getElementById('reportFrom');
+            const toInput = document.getElementById('reportTo');
+            
             if (dates) {
-                document.getElementById('reportFrom').value = dates.from;
-                document.getElementById('reportTo').value = dates.to;
+                if (fromInput) fromInput.value = dates.from;
+                if (toInput) toInput.value = dates.to;
             } else {
-                document.getElementById('reportFrom').value = '';
-                document.getElementById('reportTo').value = '';
+                if (fromInput) fromInput.value = '';
+                if (toInput) toInput.value = '';
             }
             
             generateReport(
-                document.getElementById('reportFrom').value,
-                document.getElementById('reportTo').value,
-                document.getElementById('reportFilterChild').value
+                document.getElementById('reportFrom')?.value || '',
+                document.getElementById('reportTo')?.value || ''
             );
         });
     });
     
     document.getElementById('reportGenerate').addEventListener('click', function() {
         generateReport(
-            document.getElementById('reportFrom').value,
-            document.getElementById('reportTo').value,
-            document.getElementById('reportFilterChild').value
+            document.getElementById('reportFrom')?.value || '',
+            document.getElementById('reportTo')?.value || ''
         );
     });
     
     document.getElementById('reportClear').addEventListener('click', function() {
-        document.getElementById('reportFrom').value = '';
-        document.getElementById('reportTo').value = '';
-        document.getElementById('reportResult').innerHTML = '';
+        const fromInput = document.getElementById('reportFrom');
+        const toInput = document.getElementById('reportTo');
+        const resultDiv = document.getElementById('reportResult');
+        const summaryDiv = document.getElementById('reportSummary');
+        const fundsDiv = document.getElementById('reportFundsSummary');
+        
+        if (fromInput) fromInput.value = '';
+        if (toInput) toInput.value = '';
+        if (resultDiv) resultDiv.innerHTML = '';
+        if (summaryDiv) summaryDiv.innerHTML = '';
+        if (fundsDiv) fundsDiv.innerHTML = '';
     });
     
+    // === АВТОМАТИЧЕСКАЯ ПРОВЕРКА ОБНОВЛЕНИЙ ===
     if (parentData) {
         setTimeout(() => {
-            generateReport('', '', 'all');
-        }, 100);
+            checkForUpdates(true);
+        }, 3000);
     }
     
     console.log('✅ Инициализация завершена');
