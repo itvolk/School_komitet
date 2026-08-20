@@ -1590,7 +1590,7 @@ function generateReport(from, to) {
         let income = 0, expense = 0;
         list.forEach(t => { 
             if (t.type === 'income') income += t.amount; 
-            else expense += t.amount; 
+            else if (t.type === 'expense') expense += t.amount; 
         });
         const balance = income - expense;
         
@@ -1623,6 +1623,15 @@ function generateReport(from, to) {
         const allTransactions = getTransactions();
         const fundStats = [];
         
+        // Словарь для перевода периодичности
+        const periodLabels = {
+            'monthly': 'Ежемесячно',
+            'quarterly': 'Ежеквартально',
+            'halfyear': 'За полугодие',
+            'yearly': 'Ежегодно',
+            'once': 'Разово'
+        };
+        
         funds.forEach(fund => {
             // Приходы по фонду за период
             const fundIncomes = list.filter(t => t.type === 'income' && t.fund === fund);
@@ -1643,29 +1652,69 @@ function generateReport(from, to) {
             // Текущий остаток по фонду
             const currentBalance = allFundIncomeSum - allFundExpenseSum;
             
-            // Взносы по фонду
+            // Взносы по этому фонду
             const feeData = getFees().filter(f => f.fund === fund);
             const totalStudents = children.length;
+            
+            // Плановый сбор на одного ученика (сумма всех взносов по этому фонду)
             const perPersonAmount = feeData.reduce((sum, f) => sum + f.amount, 0);
             const totalPlanned = perPersonAmount * totalStudents;
+            
+            // Всего собрано по фонду (все приходы)
             const totalPaid = allTransactions.filter(t => t.type === 'income' && t.fund === fund).reduce((sum, t) => sum + t.amount, 0);
             const totalDebt = totalPlanned - totalPaid;
             
-            // Количество должников
+            // === ПРАВИЛЬНЫЙ РАСЧЁТ ДОЛЖНИКОВ (по имени) ===
             let debtorsCount = 0;
+            
+            // Проходим по каждому ученику
             children.forEach(child => {
-                const childPaid = allTransactions.filter(t => t.type === 'income' && t.childId === child.id && t.fund === fund).reduce((sum, t) => sum + t.amount, 0);
+                // Сколько должен этот ученик по этому фонду (сумма всех взносов)
                 let childPlanned = 0;
                 feeData.forEach(f => childPlanned += f.amount);
-                if (childPlanned > childPaid) debtorsCount++;
+                
+                // Сколько оплатил этот ученик по этому фонду
+                // Ищем по имени, так как в родительских данных может не быть childId
+                const childPaid = allTransactions
+                    .filter(t => t.type === 'income' && 
+                        t.childName === child.name && 
+                        t.fund === fund)
+                    .reduce((sum, t) => sum + t.amount, 0);
+                
+                // Если должен больше, чем оплатил — это должник
+                if (childPlanned > childPaid + 0.01) {
+                    debtorsCount++;
+                }
             });
             
+            // Добавляем только если есть хоть какие-то данные по фонду
             if (totalPlanned > 0 || totalPaid > 0 || currentBalance !== 0 || fundIncomeSum > 0 || fundExpenseSum > 0) {
+                // Переводим периодичность на русский
+                const periodDisplay = feeData.length > 0 ? feeData.map(f => periodLabels[f.period] || f.period).join(', ') : '—';
+                
+                // Формируем детали взносов с русскими названиями
+                let feeDetailsHtml = '';
+                if (feeData.length > 0) {
+                    const grouped = {};
+                    feeData.forEach(fee => {
+                        const key = fee.period;
+                        if (!grouped[key]) grouped[key] = [];
+                        grouped[key].push(fee);
+                    });
+                    
+                    feeDetailsHtml = Object.keys(grouped).map(period => {
+                        const fees = grouped[period];
+                        const amounts = fees.map(f => f.amount);
+                        let amountStr = amounts.length === 1 ? amounts[0].toFixed(2) + ' ₽' : amounts.map(a => a.toFixed(2) + ' ₽').join(' + ');
+                        return `<span style="font-size:11px; color:#888; margin-right:8px;">${periodLabels[period] || period}: ${amountStr}</span>`;
+                    }).join('');
+                }
+                
                 fundStats.push({
                     name: fund,
                     planned: totalPlanned,
                     perPerson: feeData.length > 0 ? feeData.reduce((s,f) => s + f.amount, 0).toFixed(2) + ' ₽' : '—',
-                    period: feeData.length > 0 ? feeData.map(f => f.period).join(', ') : '—',
+                    period: periodDisplay,
                     income: fundIncomeSum,
                     expense: fundExpenseSum,
                     balance: currentBalance,
@@ -1674,7 +1723,8 @@ function generateReport(from, to) {
                     debtorsCount: debtorsCount,
                     feeCount: feeData.length,
                     feeDetails: feeData,
-                    totalStudents: totalStudents
+                    totalStudents: totalStudents,
+                    feeDetailsHtml: feeDetailsHtml
                 });
             }
         });
@@ -1690,27 +1740,6 @@ function generateReport(from, to) {
                 const balanceColor = f.balance >= 0 ? '#27ae60' : '#e74c3c';
                 const debtColor = f.debt > 0 ? '#e74c3c' : '#27ae60';
                 
-                let feeDetailsHtml = '';
-                if (f.feeDetails.length > 0) {
-                    const grouped = {};
-                    f.feeDetails.forEach(fee => {
-                        if (!grouped[fee.period]) grouped[fee.period] = [];
-                        grouped[fee.period].push(fee);
-                    });
-                    const periodLabels2 = {
-                        'monthly': 'ежемесячно',
-                        'quarterly': 'ежеквартально',
-                        'halfyear': 'за полугодие',
-                        'yearly': 'ежегодно',
-                        'once': 'разово'
-                    };
-                    feeDetailsHtml = Object.keys(grouped).map(period => {
-                        const amounts = grouped[period].map(f => f.amount);
-                        let amountStr = amounts.length === 1 ? amounts[0].toFixed(2) + ' ₽' : amounts.map(a => a.toFixed(2) + ' ₽').join(' + ');
-                        return `<span style="font-size:11px; color:#888; margin-right:8px;">${periodLabels2[period] || period}: ${amountStr}</span>`;
-                    }).join('');
-                }
-                
                 fundsHtml += `
                     <div class="fund-card" style="padding:16px; background:#fff; border-radius:8px; border:1px solid #e9ecf0;">
                         <div class="fund-name" style="font-weight:700; font-size:16px; color:#2c3e50; margin-bottom:6px;">
@@ -1723,7 +1752,7 @@ function generateReport(from, to) {
                             ${f.perPerson && f.perPerson !== '—' ? ` • На человека: ${f.perPerson}` : ''}
                             ${f.totalStudents ? ` • Учеников: ${f.totalStudents}` : ''}
                         </div>
-                        ${feeDetailsHtml ? `<div style="font-size:11px; color:#888; margin-bottom:6px;">${feeDetailsHtml}</div>` : ''}
+                        ${f.feeDetailsHtml ? `<div style="font-size:11px; color:#888; margin-bottom:6px;">${f.feeDetailsHtml}</div>` : ''}
                         <div style="display:grid; grid-template-columns:1fr 1fr; gap:4px 16px; font-size:13px; background:#f8f9fc; padding:8px 12px; border-radius:6px;">
                             <div style="color:#555;">📋 Плановый сбор (класс):</div>
                             <div style="font-weight:600; text-align:right;">${formatAmountWithCurrency(f.planned)}</div>
@@ -1767,25 +1796,27 @@ function generateReport(from, to) {
         
         const sorted = list.slice().sort((a,b) => a.date.localeCompare(b.date));
         sorted.forEach(t => {
-            const typeLabel = t.type === 'income' ? 'Приход' : 'Расход';
-            const badge = t.type === 'income' ? 'income' : 'expense';
+            const typeLabel = t.type === 'income' ? 'Приход' : (t.type === 'expense' ? 'Расход' : 'Перевод');
+            const badge = t.type === 'income' ? 'income' : (t.type === 'expense' ? 'expense' : 'fund');
             let desc = '';
             let fileHtml = '—';
             let fundName = '';
             
             if (t.type === 'income') {
-                const child = findChild(t.childId);
-                const childName = child ? child.name : 'неизвестный ученик';
+                const childName = t.childName || 'неизвестный ученик';
                 desc = `${childName} — от: ${t.parentName || 'не указан'}` + (t.comment ? ' ('+t.comment+')' : '');
                 fundName = t.fund || 'Общий сбор';
                 fileHtml = '—';
-            } else {
+            } else if (t.type === 'expense') {
                 desc = (t.description || '') + ' (' + (t.category || 'без категории') + ')';
                 fundName = t.category || 'без категории';
                 if (t.files && t.files.length > 0) {
                     const idStr = t.id.toString();
                     fileHtml = `<span style="cursor:pointer;color:#4f8cf7;text-decoration:underline;" onclick="showFilePreview('${idStr}')">📎 ${t.files.length}</span>`;
                 }
+            } else if (t.type === 'transfer') {
+                desc = `Из "${t.fromFund}" → "${t.toFund}"` + (t.description ? ' ('+t.description+')' : '');
+                fundName = t.fromFund + ' → ' + t.toFund;
             }
             
             html += `<tr>
