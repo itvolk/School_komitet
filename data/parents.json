@@ -1,9 +1,9 @@
 {
   "version": "1.2",
-  "exportDate": "2026-08-19",
-  "exportTime": "20:57:39",
-  "balance": 36115,
-  "totalIncome": 50500,
+  "exportDate": "2026-08-20",
+  "exportTime": "16:55:19",
+  "balance": 39615,
+  "totalIncome": 54000,
   "totalExpense": 14385,
   "funds": [
     "Общий сбор",
@@ -761,11 +761,71 @@
       "description": null,
       "category": null,
       "files": []
+    },
+    {
+      "id": "1787212143905_ambrdz",
+      "date": "2026-08-20",
+      "type": "income",
+      "amount": 500,
+      "childName": "Кузьминова Елена Дмитриевна",
+      "fund": "Канцтовары",
+      "comment": null,
+      "description": null,
+      "category": null,
+      "files": []
+    },
+    {
+      "id": "1787212208256_7c8ibq",
+      "date": "2026-08-20",
+      "type": "income",
+      "amount": 1500,
+      "childName": "Греков Герман Евгеньевич",
+      "fund": "Общий сбор",
+      "comment": null,
+      "description": null,
+      "category": null,
+      "files": []
+    },
+    {
+      "id": "1787212222267_icct6q",
+      "date": "2026-08-20",
+      "type": "income",
+      "amount": 500,
+      "childName": "Греков Герман Евгеньевич",
+      "fund": "Канцтовары",
+      "comment": null,
+      "description": null,
+      "category": null,
+      "files": []
+    },
+    {
+      "id": "1787212249427_vg90fz",
+      "date": "2026-08-20",
+      "type": "income",
+      "amount": 500,
+      "childName": "Ефременко Дмитрий Витальевич",
+      "fund": "Канцтовары",
+      "comment": null,
+      "description": null,
+      "category": null,
+      "files": []
+    },
+    {
+      "id": "1787212262970_ztuafu",
+      "date": "2026-08-20",
+      "type": "income",
+      "amount": 500,
+      "childName": "Ефременко Юрий Витальевич",
+      "fund": "Канцтовары",
+      "comment": null,
+      "description": null,
+      "category": null,
+      "files": []
     }
   ],
   "summary": {
-    "totalIncome": 50500,
+    "totalIncome": 54000,
     "totalExpense": 14385,
-    "balance": 36115
+    "balance": 39615
   }
 }
