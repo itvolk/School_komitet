@@ -1,9 +1,9 @@
 {
   "version": "1.2",
-  "exportDate": "2026-08-20",
-  "exportTime": "16:55:19",
-  "balance": 39615,
-  "totalIncome": 54000,
+  "exportDate": "2026-08-23",
+  "exportTime": "12:06:49",
+  "balance": 40115,
+  "totalIncome": 54500,
   "totalExpense": 14385,
   "funds": [
     "Общий сбор",
@@ -27,12 +27,12 @@
     {
       "id": 1,
       "name": "Ведерникова Ольга Константиновна",
-      "birthdate": null
+      "birthdate": "2019-11-11"
     },
     {
       "id": 2,
       "name": "Виноградова Варвара Владиславовна",
-      "birthdate": null
+      "birthdate": "2018-10-14"
     },
     {
       "id": 3,
@@ -42,87 +42,87 @@
     {
       "id": 4,
       "name": "Голотин Владимир Владимирович",
-      "birthdate": null
+      "birthdate": "2019-05-02"
     },
     {
       "id": 5,
       "name": "Ганноченко Варвара Дмитриевна",
-      "birthdate": null
+      "birthdate": "2019-08-08"
     },
     {
       "id": 6,
       "name": "Голенков Ярослав Алексеевич",
-      "birthdate": null
+      "birthdate": "2019-07-18"
     },
     {
       "id": 7,
       "name": "Головина Алиса Руслановна",
-      "birthdate": null
+      "birthdate": "2019-01-18"
     },
     {
       "id": 8,
       "name": "Греков Герман Евгеньевич",
-      "birthdate": null
+      "birthdate": "2018-11-15"
     },
     {
       "id": 9,
       "name": "Дядюшкин Глеб Александрович",
-      "birthdate": null
+      "birthdate": "2019-08-27"
     },
     {
       "id": 10,
       "name": "Ефременко Дмитрий Витальевич",
-      "birthdate": null
+      "birthdate": "2019-04-12"
     },
     {
       "id": 11,
       "name": "Ефременко Юрий Витальевич",
-      "birthdate": null
+      "birthdate": "2019-04-12"
     },
     {
       "id": 12,
       "name": "Залялютдинова Алина Руслановна",
-      "birthdate": null
+      "birthdate": "2019-11-04"
     },
     {
       "id": 13,
       "name": "Захаров Алексей Дмитриевич",
-      "birthdate": null
+      "birthdate": "2019-05-15"
     },
     {
       "id": 14,
       "name": "Зорин Евгений Дмитриевич",
-      "birthdate": null
+      "birthdate": "2019-12-17"
     },
     {
       "id": 15,
       "name": "Корзан Владислав Витальевич",
-      "birthdate": null
+      "birthdate": "2019-08-22"
     },
     {
       "id": 16,
       "name": "Кузьминова Елена Дмитриевна",
-      "birthdate": null
+      "birthdate": "2019-03-12"
     },
     {
       "id": 17,
       "name": "Кулагина Варвара Никитична",
-      "birthdate": null
+      "birthdate": "2018-12-26"
     },
     {
       "id": 18,
       "name": "Лычёв Арсений Александрович",
-      "birthdate": null
+      "birthdate": "2018-08-31"
     },
     {
       "id": 19,
       "name": "Макаров Денис Алексеевич",
-      "birthdate": null
+      "birthdate": "2019-11-20"
     },
     {
       "id": 20,
       "name": "Маковчук Матвей Александрович",
-      "birthdate": null
+      "birthdate": "2019-11-26"
     },
     {
       "id": 21,
@@ -132,57 +132,57 @@
     {
       "id": 22,
       "name": "Омарова Агуль Курбановна",
-      "birthdate": null
+      "birthdate": "2018-12-30"
     },
     {
       "id": 23,
       "name": "Панфилова Ксения Никитична",
-      "birthdate": null
+      "birthdate": "2018-12-26"
     },
     {
       "id": 24,
       "name": "Пискунов Роман Александрович",
-      "birthdate": null
+      "birthdate": "2019-11-25"
     },
     {
       "id": 25,
       "name": "Плеханов Лев Константинович",
-      "birthdate": null
+      "birthdate": "2019-09-18"
     },
     {
       "id": 26,
       "name": "Пономарёва Василиса Дмитриевна",
-      "birthdate": null
+      "birthdate": "2019-04-02"
     },
     {
       "id": 27,
       "name": "Приходько Иван Михайлович",
-      "birthdate": null
+      "birthdate": "2019-12-02"
     },
     {
       "id": 28,
       "name": "Просверников Егор Александрович",
-      "birthdate": null
+      "birthdate": "2019-04-09"
     },
     {
       "id": 29,
       "name": "Суринова Майя Александровна",
-      "birthdate": null
+      "birthdate": "2019-12-06"
     },
     {
       "id": 30,
       "name": "Харченко Дмитрий Александрович",
-      "birthdate": null
+      "birthdate": "2019-07-10"
     },
     {
       "id": 1786734759126.5105,
       "name": "Щепачева Полина Витальевна",
-      "birthdate": null
+      "birthdate": "2018-12-11"
     },
     {
       "id": 1786735997224.7869,
       "name": "Ященко Арина Андреевна",
-      "birthdate": null
+      "birthdate": "2019-07-19"
     }
   ],
   "transactions": [
@@ -821,11 +821,23 @@
       "description": null,
       "category": null,
       "files": []
+    },
+    {
+      "id": "1787387642083_ij5u7n",
+      "date": "2026-08-22",
+      "type": "income",
+      "amount": 500,
+      "childName": "Кулагина Варвара Никитична",
+      "fund": "Канцтовары",
+      "comment": null,
+      "description": null,
+      "category": null,
+      "files": []
     }
   ],
   "summary": {
-    "totalIncome": 54000,
+    "totalIncome": 54500,
     "totalExpense": 14385,
-    "balance": 39615
+    "balance": 40115
   }
 }
