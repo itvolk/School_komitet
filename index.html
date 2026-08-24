@@ -75,8 +75,10 @@
         .btn-contact:hover { background: #8e44ad; }
         .btn-update { background: #f39c12; color: #fff; }
         .btn-update:hover { background: #e67e22; }
-        .btn-debtors { background: #e74c3c; color: #fff; }
-        .btn-debtors:hover { background: #c0392b; }
+        .btn-birthday { background: #e74c3c; color: #fff; }
+        .btn-birthday:hover { background: #c0392b; }
+        .btn-birthday-outline { background: transparent; border: 1px solid #e74c3c; color: #e74c3c; }
+        .btn-birthday-outline:hover { background: #e74c3c; color: #fff; }
         .hidden { display: none; }
         
         .tabs { 
@@ -232,6 +234,28 @@
         .debtor-item .debtor-amount.low { color: #2980b9; }
         .debtor-item .debtor-amount.zero { color: #27ae60; }
 
+        .debtor-summary {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 12px;
+            margin-bottom: 12px;
+        }
+        .debtor-summary .debt-item {
+            background: #fff;
+            padding: 12px;
+            border-radius: 8px;
+            border: 1px solid #e9ecf0;
+            text-align: center;
+        }
+        .debtor-summary .debt-item .amount {
+            font-size: 20px;
+            font-weight: 700;
+        }
+        .debtor-summary .debt-item .label {
+            font-size: 12px;
+            color: #888;
+        }
+
         .period-selector { display: flex; gap: 6px; flex-wrap: wrap; align-items: center; }
         .period-selector .btn { padding: 6px 12px; font-size: 12px; min-height: 36px; }
 
@@ -383,6 +407,32 @@
             margin-top: 2px;
         }
 
+        /* Стили для дней рождения */
+        .birthday-soon {
+            background: #fce4ec;
+            color: #c62828;
+            padding: 2px 10px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 600;
+            white-space: nowrap;
+        }
+        .birthday-today {
+            background: #e74c3c;
+            color: #fff;
+            padding: 2px 10px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 600;
+            white-space: nowrap;
+            animation: pulse 1s infinite;
+        }
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
         @media (max-width: 768px) {
             body { padding: 8px; }
             .container { padding: 12px; border-radius: 12px; }
@@ -489,7 +539,6 @@
             <h1 style="font-size:20px; margin:0;">📊 Фонд родительского кометета 1"Е" класса 2026 г.</h1>
             <div class="header-actions">
                 <button class="btn btn-contact btn-sm" id="contactBtn">💬 Связь с автором</button>
-                <button class="btn btn-debtors btn-sm" id="debtorsBtn">🔴 Должники</button>
                 <button class="btn btn-update btn-sm" id="updateFromSiteBtn">🔄 Обновить с сайта</button>
                 <button class="btn btn-success btn-sm" id="importBtn">📤 Импорт файла</button>
                 <input type="file" id="importFile" accept=".json" style="display:none;">
@@ -655,10 +704,16 @@
         <div id="tabClass" class="tab-content">
             <div class="card">
                 <h3>👨‍👩‍👧‍👦 Класс</h3>
+                
+                <div style="display:flex; gap:8px; flex-wrap:wrap; margin-bottom:12px;">
+                    <button class="btn btn-birthday btn-sm" id="exportBirthdaysBtn">📅 Экспорт в календарь (.ics)</button>
+                    <button class="btn btn-birthday-outline btn-sm" id="exportBirthdaysWithRemindersBtn">🔔 С напоминаниями</button>
+                </div>
+                
                 <div class="table-wrapper">
                     <table>
-                        <thead><tr><th>#</th><th>Ученик</th><th>Дата рождения</th></tr></thead>
-                        <tbody id="classTableBody"><tr><td colspan="3" style="text-align:center;color:#999;">Нет данных</td></tr></tbody>
+                        <thead><tr><th>#</th><th>Ученик</th><th>Дата рождения</th><th>Дней до ДР</th></tr></thead>
+                        <tbody id="classTableBody"><tr><td colspan="4" style="text-align:center;color:#999;">Нет данных</td></tr></tbody>
                     </table>
                 </div>
             </div>
@@ -1070,6 +1125,117 @@ async function checkDataExists() {
         console.error('❌ Ошибка проверки наличия данных:', e);
         return false;
     }
+}
+
+// === ЭКСПОРТ ДНЕЙ РОЖДЕНИЙ В .ICS ===
+function exportBirthdays(includeReminders = false) {
+    const children = getChildren();
+    
+    if (children.length === 0) {
+        alert('❌ Нет данных о детях');
+        return;
+    }
+    
+    const childrenWithBirthday = children.filter(c => c.birthdate);
+    
+    if (childrenWithBirthday.length === 0) {
+        alert('❌ Нет данных о днях рождения');
+        return;
+    }
+    
+    let icsContent = [
+        'BEGIN:VCALENDAR',
+        'VERSION:2.0',
+        'PRODID:-//Казначей 1"Е" класса//Дни рождения//RU',
+        'CALSCALE:GREGORIAN',
+        'METHOD:PUBLISH',
+        'X-WR-CALNAME:Дни рождения 1"Е" класса',
+        'X-WR-TIMEZONE:Europe/Moscow'
+    ];
+    
+    icsContent.push('BEGIN:VTIMEZONE');
+    icsContent.push('TZID:Europe/Moscow');
+    icsContent.push('X-LIC-LOCATION:Europe/Moscow');
+    icsContent.push('BEGIN:STANDARD');
+    icsContent.push('TZOFFSETFROM:+0300');
+    icsContent.push('TZOFFSETTO:+0300');
+    icsContent.push('TZNAME:MSK');
+    icsContent.push('DTSTART:19700101T000000');
+    icsContent.push('END:STANDARD');
+    icsContent.push('END:VTIMEZONE');
+    
+    const currentYear = new Date().getFullYear();
+    
+    childrenWithBirthday.forEach(child => {
+        const birthdate = child.birthdate;
+        const parts = birthdate.split('-');
+        const month = parseInt(parts[1]);
+        const day = parseInt(parts[2]);
+        
+        const dateStr = `${currentYear}${String(month).padStart(2, '0')}${String(day).padStart(2, '0')}`;
+        
+        const uid = `birthday-${child.id}-${Date.now()}@class-treasurer`;
+        
+        const lines = [
+            'BEGIN:VEVENT',
+            `UID:${uid}`,
+            `DTSTART;VALUE=DATE:${dateStr}`,
+            `DTEND;VALUE=DATE:${dateStr}`,
+            `RRULE:FREQ=YEARLY`,
+            `SUMMARY:🎂 День рождения ${child.name}`,
+            `DESCRIPTION:День рождения ученика 1"Е" класса - ${child.name}`,
+            'CATEGORIES:День рождения,Класс',
+            'TRANSP:TRANSPARENT',
+            'X-MICROSOFT-CDO-BUSYSTATUS:FREE'
+        ];
+        
+        if (includeReminders) {
+            lines.push('BEGIN:VALARM');
+            lines.push('ACTION:DISPLAY');
+            lines.push(`DESCRIPTION:Напоминание: День рождения ${child.name} через 7 дней`);
+            lines.push('TRIGGER;VALUE=DURATION:-P7D');
+            lines.push('END:VALARM');
+            
+            lines.push('BEGIN:VALARM');
+            lines.push('ACTION:DISPLAY');
+            lines.push(`DESCRIPTION:Напоминание: День рождения ${child.name} через 3 дня`);
+            lines.push('TRIGGER;VALUE=DURATION:-P3D');
+            lines.push('END:VALARM');
+            
+            lines.push('BEGIN:VALARM');
+            lines.push('ACTION:DISPLAY');
+            lines.push(`DESCRIPTION:Напоминание: День рождения ${child.name} завтра! 🎉`);
+            lines.push('TRIGGER;VALUE=DURATION:-P1D');
+            lines.push('END:VALARM');
+            
+            lines.push('BEGIN:VALARM');
+            lines.push('ACTION:DISPLAY');
+            lines.push(`DESCRIPTION:🎂 Сегодня день рождения ${child.name}! Поздравьте!`);
+            lines.push('TRIGGER;VALUE=DURATION:-PT0H');
+            lines.push('END:VALARM');
+        }
+        
+        lines.push('END:VEVENT');
+        icsContent = icsContent.concat(lines);
+    });
+    
+    icsContent.push('END:VCALENDAR');
+    
+    const icsString = icsContent.join('\r\n');
+    const blob = new Blob([icsString], { type: 'text/calendar;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+    
+    const link = document.createElement('a');
+    link.href = url;
+    const suffix = includeReminders ? '_с_напоминаниями' : '';
+    link.download = `Дни_рождения_1Е_класса${suffix}.ics`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+    
+    const count = childrenWithBirthday.length;
+    alert(`✅ Экспортировано ${count} ${count === 1 ? 'ученик' : count < 5 ? 'ученика' : 'учеников'} с днями рождения`);
 }
 
 // === ОБНОВЛЕНИЕ ДАННЫХ ===
@@ -1652,36 +1818,20 @@ function generateReport(from, to) {
             // Текущий остаток по фонду
             const currentBalance = allFundIncomeSum - allFundExpenseSum;
             
-            // Взносы по этому фонду
+            // Взносы по фонду
             const feeData = getFees().filter(f => f.fund === fund);
             const totalStudents = children.length;
-            
-            // Плановый сбор на одного ученика (сумма всех взносов по этому фонду)
             const perPersonAmount = feeData.reduce((sum, f) => sum + f.amount, 0);
             const totalPlanned = perPersonAmount * totalStudents;
-            
-            // Всего собрано по фонду (все приходы)
             const totalPaid = allTransactions.filter(t => t.type === 'income' && t.fund === fund).reduce((sum, t) => sum + t.amount, 0);
             const totalDebt = totalPlanned - totalPaid;
             
-            // === ПРАВИЛЬНЫЙ РАСЧЁТ ДОЛЖНИКОВ (по имени) ===
+            // Количество должников (только те, у кого есть долг)
             let debtorsCount = 0;
-            
-            // Проходим по каждому ученику
             children.forEach(child => {
-                // Сколько должен этот ученик по этому фонду (сумма всех взносов)
+                const childPaid = allTransactions.filter(t => t.type === 'income' && t.childName === child.name && t.fund === fund).reduce((sum, t) => sum + t.amount, 0);
                 let childPlanned = 0;
                 feeData.forEach(f => childPlanned += f.amount);
-                
-                // Сколько оплатил этот ученик по этому фонду
-                // Ищем по имени, так как в родительских данных может не быть childId
-                const childPaid = allTransactions
-                    .filter(t => t.type === 'income' && 
-                        t.childName === child.name && 
-                        t.fund === fund)
-                    .reduce((sum, t) => sum + t.amount, 0);
-                
-                // Если должен больше, чем оплатил — это должник
                 if (childPlanned > childPaid + 0.01) {
                     debtorsCount++;
                 }
@@ -1932,7 +2082,7 @@ function renderBalance() {
     let balance = 0;
     transactions.forEach(t => {
         if (t.type === 'income') balance += t.amount;
-        else balance -= t.amount;
+        else if (t.type === 'expense') balance -= t.amount;
     });
     
     const el = document.getElementById('balanceDisplay');
@@ -2028,14 +2178,6 @@ function renderDebtors(fundFilter, minDebt) {
         <div class="debt-item">
             <div class="amount" style="color:#e74c3c;">${formatAmountWithCurrency(totalDebt)}</div>
             <div class="label">Общая задолженность</div>
-        </div>
-        <div class="debt-item">
-            <div class="amount">${formatAmountWithCurrency(totalFee)}</div>
-            <div class="label">Общая сумма взносов</div>
-        </div>
-        <div class="debt-item">
-            <div class="amount" style="color:#27ae60;">${formatAmountWithCurrency(totalPaid)}</div>
-            <div class="label">Уже внесено</div>
         </div>
     `;
     
@@ -2161,25 +2303,49 @@ function renderClassTable() {
     const children = getChildren();
     
     if (children.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="3" style="text-align:center;color:#999;">Нет данных</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;color:#999;">Нет данных</td></tr>';
         return;
     }
     
+    const today = new Date();
+    const currentYear = today.getFullYear();
+    
     let html = '';
     children.forEach((c, i) => {
-        const birthdate = c.birthdate ? formatDate(c.birthdate) : '—';
+        const birthdate = c.birthdate;
+        let daysUntil = null;
+        let daysText = '—';
+        let badgeHtml = '';
         
-        const today = new Date();
-        const birthMonth = c.birthdate ? parseInt(c.birthdate.split('-')[1]) : 0;
-        const isBirthdayMonth = birthMonth === today.getMonth() + 1;
+        if (birthdate) {
+            const parts = birthdate.split('-');
+            const month = parseInt(parts[1]);
+            const day = parseInt(parts[2]);
+            
+            const nextBirthday = new Date(currentYear, month - 1, day);
+            if (nextBirthday < today) {
+                nextBirthday.setFullYear(currentYear + 1);
+            }
+            daysUntil = Math.ceil((nextBirthday - today) / (1000 * 60 * 60 * 24));
+            
+            if (daysUntil === 0) {
+                daysText = '🎉 СЕГОДНЯ!';
+                badgeHtml = `<span class="birthday-today">🎂 Сегодня!</span>`;
+            } else if (daysUntil <= 30) {
+                daysText = `${daysUntil} дн.`;
+                badgeHtml = `<span class="birthday-soon">🎂 ${daysUntil} дн.</span>`;
+            } else {
+                daysText = `${daysUntil} дн.`;
+            }
+        }
+        
+        const birthdateFormatted = birthdate ? formatDate(birthdate) : '—';
         
         html += `<tr>
             <td>${i+1}</td>
-            <td>
-                <strong>${c.name}</strong>
-                ${isBirthdayMonth ? '<span class="badge birthday" title="День рождения в этом месяце!">🎂</span>' : ''}
-            </td>
-            <td>${birthdate}</td>
+            <td><strong>${c.name}</strong> ${badgeHtml}</td>
+            <td>${birthdateFormatted}</td>
+            <td>${daysText}</td>
         </tr>`;
     });
     tbody.innerHTML = html;
@@ -2508,19 +2674,13 @@ document.addEventListener('DOMContentLoaded', function() {
         updateData();
     });
     
-    document.getElementById('debtorsBtn').addEventListener('click', function() {
-        const tabDebtors = document.querySelector('[data-tab="tabDebtors"]');
-        const contentDebtors = document.getElementById('tabDebtors');
-        if (tabDebtors && contentDebtors) {
-            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
-            tabDebtors.classList.add('active');
-            contentDebtors.classList.add('active');
-            renderDebtors(
-                document.getElementById('debtorFilterFund')?.value || 'all',
-                parseFloat(document.getElementById('debtorFilterMin')?.value) || 0
-            );
-        }
+    // === ЭКСПОРТ ДНЕЙ РОЖДЕНИЙ ===
+    document.getElementById('exportBirthdaysBtn').addEventListener('click', function() {
+        exportBirthdays(false);
+    });
+    
+    document.getElementById('exportBirthdaysWithRemindersBtn').addEventListener('click', function() {
+        exportBirthdays(true);
     });
     
     document.getElementById('importBtn').addEventListener('click', function() {
