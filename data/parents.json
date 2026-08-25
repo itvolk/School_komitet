@@ -1,9 +1,9 @@
 {
   "version": "1.2",
-  "exportDate": "2026-08-23",
-  "exportTime": "13:58:23",
-  "balance": 40115,
-  "totalIncome": 54500,
+  "exportDate": "2026-08-25",
+  "exportTime": "10:57:21",
+  "balance": 43115,
+  "totalIncome": 57500,
   "totalExpense": 14385,
   "funds": [
     "Общий сбор",
@@ -828,11 +828,59 @@
       "description": null,
       "category": null,
       "files": []
+    },
+    {
+      "id": "1787483624733_5juypl",
+      "date": "2026-08-23",
+      "type": "income",
+      "amount": 500,
+      "childName": "Маковчук Матвей Александрович",
+      "fund": "Канцтовары",
+      "comment": null,
+      "description": null,
+      "category": null,
+      "files": []
+    },
+    {
+      "id": "1787644358957_pfjkcx",
+      "date": "2026-08-23",
+      "type": "income",
+      "amount": 500,
+      "childName": "Суринова Майя Александровна",
+      "fund": "Канцтовары",
+      "comment": null,
+      "description": null,
+      "category": null,
+      "files": []
+    },
+    {
+      "id": "1787644452959_p7tx0n",
+      "date": "2026-08-24",
+      "type": "income",
+      "amount": 1500,
+      "childName": "Омарова Агуль Курбановна",
+      "fund": "Общий сбор",
+      "comment": null,
+      "description": null,
+      "category": null,
+      "files": []
+    },
+    {
+      "id": "1787644465182_vjd9kc",
+      "date": "2026-08-24",
+      "type": "income",
+      "amount": 500,
+      "childName": "Омарова Агуль Курбановна",
+      "fund": "Канцтовары",
+      "comment": null,
+      "description": null,
+      "category": null,
+      "files": []
     }
   ],
   "summary": {
-    "totalIncome": 54500,
+    "totalIncome": 57500,
     "totalExpense": 14385,
-    "balance": 40115
+    "balance": 43115
   }
 }
